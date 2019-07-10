@@ -2,6 +2,7 @@ from pytest import raises
 from datetime import datetime
 import os.path
 import json
+import pandas as pd
 
 from ..Lib.web_loading_strategies import webLoading
 
@@ -107,9 +108,21 @@ def test_pull_data():
     with open ("expected_pull_data.json") as json_file:
         expected_response = json.load(json_file)
     loader = webLoading(["ETH"], "hour", enddate, 1, "jsonfile.json", "csvfile.csv")
-    response = loader._pull_data("ETH", 1, datetime.timestamp(enddate))
-    with open("expected_pull_data.json", 'w') as f:
-        json.dump(response, f, indent=4)
+    response = loader._pull_data("ETH", 1, datetime.timestamp(enddate))    
 
     assert(response == expected_response)
+
+
+def test_pull_data2():
+    enddate = datetime(2019, 1, 1)
+    loader = webLoading(["ETH"], "hour", enddate, 1, "jsonfile.json", "csvfile.csv")
+    df = loader.get_data()
+    df = df.reset_index()
+    expected_df = pd.DataFrame({'date': [datetime(2019,1,1), 
+                                         datetime(2019,1,1,1)],
+                                'ETH': [0.03562, 0.03562]
+                                })
+
+    assert(expected_df.equals(df))
+    
 
