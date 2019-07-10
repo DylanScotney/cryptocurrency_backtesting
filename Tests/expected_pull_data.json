@@ -5,21 +5,21 @@
     "Data": [
         {
             "time": 1546297200,
-            "close": 3747.39,
-            "high": 3754.34,
-            "low": 3739.76,
-            "open": 3743.61,
-            "volumefrom": 1775.74,
-            "volumeto": 6608416.6
+            "close": 0.03553,
+            "high": 0.03563,
+            "low": 0.03553,
+            "open": 0.03556,
+            "volumefrom": 79512.09,
+            "volumeto": 2827.11
         },
         {
             "time": 1546300800,
-            "close": 3750.91,
-            "high": 3759.98,
-            "low": 3741.44,
-            "open": 3747.39,
-            "volumefrom": 1451.38,
-            "volumeto": 5416481.99
+            "close": 0.03562,
+            "high": 0.03562,
+            "low": 0.0355,
+            "open": 0.03553,
+            "volumefrom": 52804.28,
+            "volumeto": 1876.97
         }
     ],
     "TimeTo": 1546300800,
