@@ -113,14 +113,14 @@ def test_pull_data():
     assert(response == expected_response)
 
 
-def test_pull_data2():
+def test_get_data():
     enddate = datetime(2019, 1, 1)
-    loader = webLoading(["ETH"], "hour", enddate, 1, "jsonfile.json", "csvfile.csv")
+    loader = webLoading(["ETH"], "hour", enddate, 1, "expected_pull_data.json", "csvfile.csv")
     df = loader.get_data()
     df = df.reset_index()
-    expected_df = pd.DataFrame({'date': [datetime(2019,1,1), 
-                                         datetime(2019,1,1,1)],
-                                'ETH': [0.03562, 0.03562]
+    expected_df = pd.DataFrame({'date': [datetime(2018,12,31,23), 
+                                         datetime(2019,1,1)],
+                                'ETH': [0.03553, 0.03562]
                                 })
 
     assert(expected_df.equals(df))

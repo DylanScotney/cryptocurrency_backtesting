@@ -98,17 +98,17 @@ class webLoading(dataLoadingStrat):
                             given data
         '''
         """
+
         if timestamp == 'none':
             address = self._construct_url(symbol, limit)
         else:
             address = self._construct_url(symbol, limit, timestamp)
-
         response = requests.get(address)
         content = response.json()
 
         if(content["Response"] == "Error"):
             raise RuntimeError(content["Message"])
-    
+
         return content
 
 
@@ -138,22 +138,11 @@ class webLoading(dataLoadingStrat):
             freq = '1T'
         else: 
             raise ValueError("incompatible ticksize")
-        
-        if self._ticksize == "minute":
-            startdate = self._start_date + timedelta(minutes=1)
-            enddate = self._end_date + timedelta(minutes=1)
-        elif self._ticksize == "hour":
-            startdate = self._start_date + timedelta(hours=1)
-            enddate = self._end_date + timedelta(hours=1)
-        elif self._ticksize == "day":
-            startdate = self._start_date + timedelta(days=1)
-            enddate = self._end_date + timedelta(days=1)
 
-        times = pd.date_range(start=startdate, end=enddate, freq=freq)
+        times = pd.date_range(start=self._start_date, end=self._end_date, freq=freq)
         df = pd.DataFrame({'date': times})
         df = df.set_index('date')
         #---------------------------------------------------------------
-
         # Declare some params for extraction 
         enddate_stamp = (self._end_date - datetime(1970,1,1)).total_seconds()
         calls_needed = math.ceil(self._lookback/self._limit)
@@ -189,14 +178,12 @@ class webLoading(dataLoadingStrat):
             if(self._ticksize=="day"):
                 close_times = [time.date() for time in close_times]
             close_prices = [item["close"] for item in data]
-
             # Store data in dataframe
             #-----------------------------------------------------------
             for i in range(df.shape[0]):
                 date = df.index[i]
                 if self._ticksize == "day":
                     date = date.date()
-
                 try:
                     index = close_times.index(date)
                     df[symbol][i] = close_prices[index]

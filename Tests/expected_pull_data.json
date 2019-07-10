@@ -1,8 +1,5 @@
 {
-    "Response": "Success",
-    "Type": 100,
-    "Aggregated": false,
-    "Data": [
+    "ETH": [
         {
             "time": 1546297200,
             "close": 0.03553,
@@ -21,14 +18,5 @@
             "volumefrom": 52804.28,
             "volumeto": 1876.97
         }
-    ],
-    "TimeTo": 1546300800,
-    "TimeFrom": 1546297200,
-    "FirstValueInArray": true,
-    "ConversionType": {
-        "type": "direct",
-        "conversionSymbol": ""
-    },
-    "RateLimit": {},
-    "HasWarning": false
+    ]
 }
