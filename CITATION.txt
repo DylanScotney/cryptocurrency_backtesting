@@ -1,0 +1,6 @@
+To cite this software please use the following:
+
+Author: Dylan Scotney
+Title: <Title>
+Version: <Version>
+Date released: <Date>
