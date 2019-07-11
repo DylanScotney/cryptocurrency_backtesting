@@ -153,7 +153,10 @@ class fileLoadingDF(dataLoadingStrat):
     """
 
     def __init__(self, infile):
-        self._infile = infile
+        if infile.endswith('.csv'):
+            self._infile = infile
+        else:
+            raise ValueError("infile must be csv format")
 
     def get_data(self):
         return pd.read_csv(self._infile)            
