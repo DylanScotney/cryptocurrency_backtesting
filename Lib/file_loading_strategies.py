@@ -36,9 +36,15 @@ class fileLoadingRaw(dataLoadingStrat):
 
     def __init__(self, infile, symbols, ticksize, outfile=False):
         
-        self._infile = infile
+        if infile.endswith('.json'):
+            self._infile = infile
+        else:
+            raise ValueError("Infile must be json format")
         
-        self._symbols = symbols
+        if all(isinstance(symbol, str) for symbol in symbols):
+            self._symbols = symbols
+        else:
+            raise ValueError("Symbols must be list of string types")
 
         if ticksize == "hour":
             self._freq = '1H'
