@@ -57,8 +57,11 @@ class fileLoadingRaw(dataLoadingStrat):
         
         self._ticksize = ticksize
 
-        if outfile:
-            self._outfile = outfile
+        if outfile and not outfile.endswith('.csv'):
+            raise ValueError("outfile must be csv type")
+            
+
+        self._outfile = outfile
 
 
     def get_data(self):

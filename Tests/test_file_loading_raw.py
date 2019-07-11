@@ -41,3 +41,42 @@ def test_initialisation_failure3():
     incompatible_ticksize = 10
     with raises(ValueError):
         fileLoadingRaw(testfile, testsyms, incompatible_ticksize)
+
+
+def test_initialisation_failure4():
+    testfile = "test.json"    
+    testsyms = ['a', 'b']
+    ticksize = "hour"
+    outfile = "noncsvfile.txt"
+    with raises(ValueError):
+        fileLoadingRaw(testfile, testsyms, ticksize, outfile=outfile)
+
+
+def test_get_data():
+    testfile = "expected_pull_data.json"
+    syms = ['ETH']
+    ticksize = "hour"
+    loader = fileLoadingRaw(testfile, syms, ticksize)
+    df = loader.get_data()
+
+    expected_df = pd.DataFrame({'date': [datetime(2018,12,31,23), 
+                                        datetime(2019,1,1)],
+                                'ETH': [0.03553, 0.03562]})
+    expected_df = expected_df.set_index('date')
+    assert(expected_df.equals(df))
+
+
+def test_get_data_saving():
+    testfile = "expected_pull_data.json"
+    syms = ['ETH']
+    ticksize = "hour"
+    loader = fileLoadingRaw(testfile, syms, ticksize, outfile="storecsv.csv")
+    loader.get_data()
+
+    df = pd.read_csv("storecsv.csv")
+    df2 = pd.read_csv("expectedcsv.csv")
+
+    assert(df.equals(df2))
+
+
+
