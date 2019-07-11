@@ -8,6 +8,10 @@ from ..Lib.web_loading_strategies import webLoading
 
 
 def test_initialisation():
+    """
+    Tests basic initialisation
+    """
+
     enddate = datetime(2019,1,1)
     expected_start_date = datetime(2018,12,31,23)
     test = webLoading(['a'], "hour", enddate, 1, "jsonfile.json", "csvfile.csv")
@@ -22,6 +26,10 @@ def test_initialisation():
 
 
 def test_initialisation2():
+    """
+    Tests basic initialisation
+    """
+
     enddate = datetime(2019,1,1)
     expected_start_date = datetime(2018,12,31)
     test = webLoading(['a'], "day", enddate, 1, "jsonfile.json", "csvfile.csv")
@@ -36,6 +44,10 @@ def test_initialisation2():
 
 
 def test_initialisation3():
+    """
+    Tests basic initialisation
+    """
+
     enddate = datetime(2019,1,1)
     expected_start_date = datetime(2018,12,31,23,59)
     test = webLoading(['a'], "minute", enddate, 1, "jsonfile.json", "csvfile.csv")
@@ -50,6 +62,10 @@ def test_initialisation3():
 
 
 def test_initialisation_failure1():
+    """
+    Tests for failure of incorrect symbols input
+    """
+
     enddate = datetime(2019,1,1)
     symbols = ["not", 1, "all strings"]
     with raises(ValueError):
@@ -57,6 +73,10 @@ def test_initialisation_failure1():
     
 
 def test_initialisation_failure2():
+    """
+    Tests for failure of incorrect ticksize input
+    """
+
     enddate = datetime(2019,1,1)
     ticksize = "non compatible ticksize"
     with raises(ValueError):
@@ -64,12 +84,20 @@ def test_initialisation_failure2():
 
 
 def test_initialisation_failure3():
+    """
+    Tests for failure of incorrect endate input
+    """
+
     enddate = "non compatible enddate"
     with raises(ValueError):
         webLoading(['a'], "hour" , enddate, 1, "jsonfile.json", "csvfile.csv")
 
 
 def test_initialisation_failure4():
+    """
+    Tests for failure of incorrect lookback input
+    """
+
     enddate = datetime(2019, 1, 1)
 
     lookback1 = 0
@@ -82,6 +110,11 @@ def test_initialisation_failure4():
 
 
 def test_construct_url1():
+    """
+    Tests default construction of url
+    """
+
+
     enddate = datetime(2019, 1, 1)
     loader = webLoading(["ETH"], "hour", enddate, 1, "jsonfile.json",  "csvfile.csv")
     expected_url = ("https://min-api.cryptocompare.com/data/histohour?fsym=" +
@@ -93,6 +126,10 @@ def test_construct_url1():
 
 
 def test_construct_url2():
+    """
+    Tests construction of url for a given enddate timestamp
+    """
+
     enddate = datetime(2019, 1, 1)
     loader = webLoading(["ETH"], "hour", enddate, 1, "jsonfile.json", "csvfile.csv")
     expected_url = ("https://min-api.cryptocompare.com/data/histohour?fsym=" +
@@ -104,6 +141,10 @@ def test_construct_url2():
 
 
 def test_pull_data():
+    """
+    Tests pull_data functionality
+    """
+
     enddate = datetime(2019, 1, 1)
     with open ("expected_pull_data.json") as json_file:
         expected_response = json.load(json_file)
@@ -114,6 +155,10 @@ def test_pull_data():
 
 
 def test_get_data():
+    """
+    Tests get_data functionality
+    """
+
     enddate = datetime(2019, 1, 1)
     loader = webLoading(["ETH"], "hour", enddate, 1, "expected_pull_data.json", "csvfile.csv")
     df = loader.get_data()

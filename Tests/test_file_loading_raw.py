@@ -8,6 +8,10 @@ from ..Lib.file_loading_strategies import fileLoadingRaw
 
 
 def test_initialisation1():
+    """
+    Tests standard initialisation
+    """
+
     testfile = "test.json"
     testsyms = ['a', 'b']
     ticksize = "hour"
@@ -20,6 +24,10 @@ def test_initialisation1():
 
 
 def test_initialisation_failure1():
+    """
+    Tests for failure of incorrect file input
+    """
+
     nonjsonfile = "file.txt"    
     testsyms = ['a', 'b']
     ticksize = "hour"
@@ -28,6 +36,10 @@ def test_initialisation_failure1():
 
 
 def test_initialisation_failure2():
+    """
+    Tests for failure of incorrect symbols input
+    """
+
     testfile = "test.json"
     non_str_syms = [1,2,3]
     ticksize = "hour"
@@ -36,6 +48,10 @@ def test_initialisation_failure2():
 
 
 def test_initialisation_failure3():
+    """
+    Tests for failure of incorrect ticksize input
+    """
+
     testfile = "test.json"    
     testsyms = ['a', 'b']
     incompatible_ticksize = 10
@@ -44,6 +60,10 @@ def test_initialisation_failure3():
 
 
 def test_initialisation_failure4():
+    """
+    Tests for failure of incorrect outfile input
+    """
+
     testfile = "test.json"    
     testsyms = ['a', 'b']
     ticksize = "hour"
@@ -53,6 +73,10 @@ def test_initialisation_failure4():
 
 
 def test_get_data():
+    """
+    Tests get_data functionality
+    """
+
     testfile = "expected_pull_data.json"
     syms = ['ETH']
     ticksize = "hour"
@@ -67,6 +91,11 @@ def test_get_data():
 
 
 def test_get_data_saving():
+    """
+    Tests get data saves files correctly if outfile specified in
+    constructor
+    """
+
     testfile = "expected_pull_data.json"
     syms = ['ETH']
     ticksize = "hour"
