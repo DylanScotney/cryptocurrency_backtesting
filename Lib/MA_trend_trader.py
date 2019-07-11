@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import pandas as pd
 
 
 class movingAverageTrader():
@@ -28,10 +29,23 @@ class movingAverageTrader():
 
     def __init__(self, df, asset_symbol, fast_MA, slow_MA, MA_type):
 
-        self.df = df
-        self.sym = asset_symbol
+        if not isinstance(df, pd.DataFrame):
+            raise ValueError("df must be a pandas DataFrame")
+        if not isinstance(asset_symbol, str):
+            raise ValueError("asset symbol must be a string")
+        if asset_symbol not in df.keys():
+            raise ValueError("asset symbol not in dataframe headers")
         if slow_MA < fast_MA:
             raise ValueError("Slower moving average must have the shorter period")
+        if not isinstance(slow_MA, int):
+            raise ValueError("slow_MA period must be an integer")
+        if not isinstance(fast_MA, int):
+            raise ValueError("fast_MA period must be integer")
+        if MA_type != "EMA" and MA_type != "SMA":
+            raise ValueError("MA type not supported. Try 'SMA' or 'EMA")
+
+        self.df = df        
+        self.sym = asset_symbol
         self.MAf_period = fast_MA
         self.MAs_period = slow_MA
         self.MA_type = MA_type
@@ -50,8 +64,6 @@ class movingAverageTrader():
             self.MAf_str = '{}SMA'.format(self.MAf_period)
             self.MAs_str = '{}SMA'.format(self.MAs_period)
             self.generateMAs()
-        else:
-            raise ValueError("moving average type not supported")
 
 
     def generateMAs(self):
