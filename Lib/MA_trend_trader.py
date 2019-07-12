@@ -37,10 +37,10 @@ class movingAverageTrader():
             raise ValueError("asset symbol not in dataframe headers")
         if slow_MA < fast_MA:
             raise ValueError("Slower moving average must have the shorter period")
-        if not isinstance(slow_MA, int):
-            raise ValueError("slow_MA period must be an integer")
-        if not isinstance(fast_MA, int):
-            raise ValueError("fast_MA period must be integer")
+        if not isinstance(slow_MA, int) or slow_MA < 1:
+            raise ValueError("slow_MA period must be a positive int")
+        if not isinstance(fast_MA, int) or fast_MA < 1:
+            raise ValueError("fast_MA period must be a positive int")
         if MA_type != "EMA" and MA_type != "SMA":
             raise ValueError("MA type not supported. Try 'SMA' or 'EMA")
 
@@ -89,7 +89,7 @@ class movingAverageTrader():
         
     def getMA(self, t):
         """
-        Gets the value of MAs at index t in self.df
+        Gets the value of fast and slow MAs at index t in self.df
         """
         return self.df.loc[t, self.MAs_str], self.df.loc[t, self.MAf_str]
 
