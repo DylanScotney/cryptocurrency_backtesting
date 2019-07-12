@@ -9,8 +9,6 @@ from collections import Counter
 from ..Lib.data_loader import dataLoader
 from ..Lib.web_loading_strategies import webLoading
 from ..Lib.file_loading_strategies import fileLoadingRaw, fileLoadingDF
-from ..Lib.data_analyser import dataAnalyser
-from ..Lib.pairs_trading_backtester import pairsBacktester
 
 cpath = os.path.dirname(__file__) # current path
 
