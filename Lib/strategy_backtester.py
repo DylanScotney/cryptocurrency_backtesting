@@ -12,7 +12,7 @@ class backtest():
 
     def __init__(self, strategy, plot_results=False):
         self._strategy = strategy
-        self.plot_results = False
+        self.plot_results = plot_results
 
     def trade(self):
         """

@@ -50,8 +50,9 @@ class crossoverTrading(movingAverageTrading):
         T = self.df.shape[0]
         plt.subplot(211)
         self.df.loc[t0:T, self.sym].plot(label=self.sym)
-        self.df.loc[t0:T, self.MAf_str].plot(label=self.MAf_str)
-        self.df.loc[t0:T, self.MAs_str].plot(label=self.MAs_str)
+        self.df.loc[t0:T, self.MAs_str].plot(label=self.MAs_str)        
+        if self.MAf_period > 1:
+            self.df.loc[t0:T, self.MAf_str].plot(label=self.MAf_str)
         [plt.axvline(x, c='g', lw=0.5, ls='--') for x in opentimes]
         [plt.axvline(x, c='r', lw=0.5, ls='--') for x in closetimes] 
         plt.ylabel('{}/BTC'.format(self.sym))        
