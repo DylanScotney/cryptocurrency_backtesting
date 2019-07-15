@@ -134,18 +134,20 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def plotTrading(self, opentimes, closetimes):
         """
-        Plot the completed trading
+        This method should plot the complete trading activities 
+
+        Inputs: 
+        - opentimes:        (list) indices of when a position was opened
+        - closetimes:       (list) indices of when a position was closed
         """
-        return
 
 
     @abc.abstractmethod
     def trade(self, plot=False):
         """
-        Executes all trades from the earliest value that the SMA can be
-        determined. 
+        This method should executes all trades from the earliest value
+        that the SMA can be determined. 
         
         Inputs:
         - plot:             (bool) optional arg to plot trading results
         """
-        return
