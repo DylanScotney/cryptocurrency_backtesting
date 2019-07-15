@@ -1,9 +1,9 @@
 from matplotlib import pyplot as plt
 import pandas as pd
 
-from .MA_trader_base import movingAverageTrading
+from .abstract_MA_trading_stategy import movingAverageTrading
 
-class zscoreTrading(movingAverageTrading):
+class zScoreTrading(movingAverageTrading):
     """
     A class that backtests a z score based trading algorithm which
     attempts to capitalise on the over compensation of moves in the 
@@ -38,7 +38,7 @@ class zscoreTrading(movingAverageTrading):
         
         args = (df, asset_symbol, MA_type, slow_MA)
         kwargs = {"fast_MA" : fast_MA, "trading_fee" : trading_fee}        
-        super(zscoreTrading, self).__init__(*args, **kwargs)
+        super(zScoreTrading, self).__init__(*args, **kwargs)
 
         self.zscore_period = zscore_period 
         self.bandwith = bandwidth
