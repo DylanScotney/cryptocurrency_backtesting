@@ -18,10 +18,10 @@ def fmt(x, pos):
 
 def main():
 
-    save_results = False
-    plot_results = True
+    save_results = True
+    plot_results = False
     if save_results:
-        results_outfile = cpath +"\\..\\Data\\deleteme.csv"
+        results_outfile = cpath +"\\..\\Data\\dualSMAZscores.csv"
 
     
     # Load Dataframe
@@ -36,11 +36,10 @@ def main():
     # Define trading parameters
     #--------------------------------------------------------------------------
     symbols = [key for key in df.keys() if key not in ['date']]
-    symbols = ['BCH']
-    bandwidths = [2.0]#[1.0, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0]
-    MAs = [100] #[5, 8, 10, 15, 20, 30, 40, 50, 80, 100, 200, 400]
-    num_faster_MAs = 4 # number of faster MAs for each MA
-    ZScore_MAs = [15]#[5, 6, 7, 8, 10, 12, 14, 15, 20, 30, 50, 80, 100]
+    bandwidths = [1.0, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0]
+    MAs = [80, 100]
+    num_faster_MAs = 10 # number of faster MAs for each MA
+    ZScore_MAs = [5, 6, 7, 8, 10, 12, 14, 15, 20, 30, 50, 80, 100]
     ylabels = []
 
     if plot_results:
@@ -51,6 +50,9 @@ def main():
     # Execute trading
     #--------------------------------------------------------------------------
     for bandwidth in bandwidths:
+        
+        if save_results:
+            df_csv = df[['date']]
 
         for symbol in symbols:
 
@@ -58,7 +60,7 @@ def main():
 
                 # Define SMA periods for trends
                 MA = MAs[i]
-                faster_MAs = np.linspace(0, MA, num=num_faster_MAs, endpoint=False)
+                faster_MAs = np.linspace(1, MA, num=num_faster_MAs, endpoint=False)
                 faster_MAs = [int(item) for item in faster_MAs]
 
                 for k in range(len(faster_MAs)):   
@@ -69,18 +71,20 @@ def main():
 
                     for j in range(len(ZScore_MAs)):  
                         Z_MA = ZScore_MAs[j]      
+                        
+                        print(symbol, MA, MAfast, Z_MA, bandwidth)
                         asset_df = df[['date', symbol]].reset_index()
                         trader = zscoreTrader(asset_df, symbol, MA,
                                               Z_MA, bandwidth, 
                                               fast_MA_period=MAfast)
-                        trader.trade(plot=True)
+                        trader.trade()
 
                         if plot_results:
                             loc = num_faster_MAs*i + k, j # plot location
                             returns[loc] = asset_df['returns'].cumsum().iloc[-1]
                         if save_results:
-                            header = '{}_{}_{}_{}'.format(symbol, MA, 
-                                                        Z_MA, bandwidth)
+                            header = '{}_{}v{}_{}_{}'.format(symbol, MA, MAfast,
+                                                             Z_MA, bandwidth)
                             df_csv[header] = asset_df['returns']
 
         if plot_results:
@@ -96,10 +100,13 @@ def main():
             if save_results:
                 plt.savefig('{}_BTC_bw{}.png'. format(symbol, bandwidth))
             plt.show()
+        
+        if save_results:
+            results_outfile = cpath +"\\..\\Data\\extra_bw{}.csv".format(bandwidth)
+            df_csv.to_csv(results_outfile)
     #--------------------------------------------------------------------------
 
-    if save_results:
-        df_csv.to_csv(results_outfile)
+    
 
 
 if __name__ == "__main__":

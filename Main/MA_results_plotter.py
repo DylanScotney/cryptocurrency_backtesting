@@ -12,47 +12,41 @@ from ..Lib.file_loading_strategies import fileLoadingRaw, fileLoadingDF
 
 cpath = os.path.dirname(__file__) # current path
 
-infile = cpath + "\\..\\Data\\test.csv"
+infile = cpath + "\\..\\Data\\deleteme.csv"
 
 df = pd.read_csv(infile)
 df = df.drop(columns = ['Unnamed: 0', 'date'])
-df = (df - 1)/23
-df = df*100
-df.plot()
-plt.show()
 MAs = [1, 10, 20, 40, 50, 80, 100, 120, 160, 200, 240, 280, 320, 360, 400]
-MAs = [1, 10, 20, 50, 80, 100, 200]
+MAs = [1, 10, 20, 40, 50, 80, 100, 120, 160]
 returns = np.ones((len(MAs), len(MAs)))
 
 count = 0
 results = []
 keys = []
 
-print(df.keys())
-for key in df.keys():
-    print(key, df[key].iloc[-1])
-    keys.append(key)
-    results.append(df[key].iloc[-1])
+while (count < len(df.keys())): 
+    for i in range(len(MAs)):        
+        for j in range(i+1, len(MAs)):
+            key = df.keys()[count]
+            returns[j, i] += df[key].cumsum().iloc[-1]
+            count += 1
 
-count = 0
-for i in range(len(MAs)):
-    for j in range(i, len(MAs)):
-        returns[j,i] = results[count]
-        count += 1
 
 
 def fmt(x, pos):
-    return '{}%'.format(x)
+    return '{}%'.format(np.round(x*100, 0))
 
-
-mask = np.triu(returns,1)
+returns = returns/23
+mask = np.triu(returns, 1)
 returns = np.ma.array(returns, mask=mask)
-plt.imshow(returns, cmap = 'Spectral')
-cb = plt.colorbar(format = FuncFormatter(fmt))
-plt.clim(vmax=100)
+plt.imshow(returns, cmap='RdBu')
+plt.colorbar(format=FuncFormatter(fmt))
+max_ret = np.nanmax(abs(returns))
+max_ret = np.nanmax(returns)
+plt.clim(vmax=max_ret, vmin=-max_ret)
 plt.xticks(np.arange(len(MAs)), MAs)
 plt.yticks(np.arange(len(MAs)), MAs)
-plt.xlabel("EMA Period")
+plt.xlabel("SMA Period")
 plt.ylabel("SMA Period")
 plt.show()
 

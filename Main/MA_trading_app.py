@@ -20,7 +20,7 @@ def fmt(x, pos):
 def main(): 
 
     save_results = True
-    plot_results = True
+    plot_results = False
     MA_type = 'SMA'
     if save_results:
         results_outfile = cpath + "\\..\\Data\\deleteme.csv"
@@ -38,7 +38,7 @@ def main():
     # Define Trading Parameters
     #--------------------------------------------------------------------------
     symbols = [key for key in df.keys() if key not in ['date']]
-    MA_list = [1, 10, 20, 40, 50, 80, 100, 120, 160, 200, 240, 280, 320, 360, 400]
+    MA_list = [1, 10, 20, 40, 50, 80, 100, 120, 160]#, 200, 240, 280, 320, 360, 400]
     if plot_results:
         returns = np.zeros((len(MA_list), len(MA_list))) # store final returns
     #--------------------------------------------------------------------------
@@ -53,7 +53,7 @@ def main():
                 MAf = MA_list[i]
                 print("Trading {} for {} v {}".format(symbol, MAs, MAf))
                 asset_df = df[['date', symbol]].reset_index()
-                trader = movingAverageTrader(asset_df, symbol, MAf, MAs, MA_type)
+                trader = movingAverageTrader(asset_df, symbol, MAf, MAs, MA_type, trading_fee=0.001)
                 trader.trade()
 
                 if plot_results:

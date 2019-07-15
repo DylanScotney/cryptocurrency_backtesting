@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import pandas as pd
 
 
 class zscoreTrader():
@@ -16,12 +17,12 @@ class zscoreTrader():
     Initialisation:
     - df:               pandas dataframe containing asset price history
     - asset_symbol:     header of asset price history in df
-    - base_MA_period:   period of a moving average that is used to
+    - slow_MA_period:   period of a moving average that is used to
                         to determine the trend
     - zscore_period:    lookback period for calculating z score
     - bandwidth:        bandwidth of zscore values on which trading
                         logic is executed. 
-    - fast_MA_period:   A MA period shorter than base_MA_period that will
+    - fast_MA_period:   A MA period shorter than slow_MA_period that will
                         determine trend. If not specified period=0 
                         (i.e. spotprice is used)
 
@@ -30,20 +31,29 @@ class zscoreTrader():
     """
 
 
-    def __init__(self, df, asset_symbol, base_MA_period, zscore_period, bandwidth, fast_MA_period=0):
-
-        if fast_MA_period > base_MA_period:
-            raise ValueError("fast MA period must be shorter than base period")
+    def __init__(self, df, asset_symbol, slow_MA_period, zscore_period, bandwidth, fast_MA_period=1):
+        if not isinstance(df, pd.DataFrame):
+            raise ValueError("df must be a pandas DataFrame")
+        if not isinstance(asset_symbol, str):
+            raise ValueError("asset symbol must be a string")
+        if asset_symbol not in df.keys():
+            raise ValueError("asset symbol not in dataframe headers")
+        if fast_MA_period >= slow_MA_period:
+            raise ValueError("fast MA period must be shorter than slow period")
+        if not isinstance(slow_MA_period, int) or slow_MA_period < 2:
+            raise ValueError("slow_MA_period period must be an int > 2")
+        if not isinstance(fast_MA_period, int) or fast_MA_period < 1:
+            raise ValueError("fast_MA period must be a positive int")
 
         self.df = df
         self.sym = asset_symbol
-        self.MA_period = base_MA_period 
+        self.MA_period = slow_MA_period 
         self.fast_MA_period = fast_MA_period
         self.zscore_period = zscore_period 
         self.bandwith = bandwidth
 
         # Strings for dataframe headers
-        self.MAs_str = '{}SMA'.format(base_MA_period) # Slow MA
+        self.MAs_str = '{}SMA'.format(slow_MA_period) # Slow MA
         self.MAf_str = '{}SMA'.format(fast_MA_period)  # Fast MA
         self.Z_str = '{}Z'.format(zscore_period)
         
@@ -68,7 +78,7 @@ class zscoreTrader():
         """
         self.df[self.MAs_str] = self.df[self.sym].rolling(window=self.MA_period).mean()
 
-        if self.fast_MA_period > 0:
+        if self.fast_MA_period > 1:
             self.df[self.MAf_str] = self.df[self.sym].rolling(window=self.fast_MA_period).mean()
     
 
@@ -93,7 +103,7 @@ class zscoreTrader():
         """
         Gets the values of the fast and slow SMAs at index t in self.df
         """
-        if self.fast_MA_period == 0:
+        if self.fast_MA_period == 1:
             return self.df.loc[t, self.MAs_str], self.getSpotPrice(t)
         else:
             return self.df.loc[t, self.MAs_str], self.df.loc[t, self.MAf_str] 

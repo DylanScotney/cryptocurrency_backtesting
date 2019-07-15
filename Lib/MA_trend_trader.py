@@ -20,6 +20,7 @@ class movingAverageTrader():
     - slow_MA:          (int) period of longer, slower MA
     - MA_type:          (str) 'SMA' or 'EMA' for simple MA or 
                         exponential MA
+    - trading_fee:      (double) fractional trading fee between 0 and 1
 
     Notes:
     - Currently designed to only open one positon at a time
@@ -27,7 +28,7 @@ class movingAverageTrader():
     """
 
 
-    def __init__(self, df, asset_symbol, fast_MA, slow_MA, MA_type):
+    def __init__(self, df, asset_symbol, fast_MA, slow_MA, MA_type, trading_fee=0.0):
 
         if not isinstance(df, pd.DataFrame):
             raise ValueError("df must be a pandas DataFrame")
@@ -43,12 +44,15 @@ class movingAverageTrader():
             raise ValueError("fast_MA period must be a positive int")
         if MA_type != "EMA" and MA_type != "SMA":
             raise ValueError("MA type not supported. Try 'SMA' or 'EMA")
+        if trading_fee < 0 or trading_fee > 1:
+            raise ValueError("Trading fee must be between 0 and 1.")
 
         self.df = df        
         self.sym = asset_symbol
         self.MAf_period = fast_MA
         self.MAs_period = slow_MA
         self.MA_type = MA_type
+        self.trading_fee = trading_fee
 
         # initialise with no position or entries
         self._entry_price = 0 
@@ -100,6 +104,7 @@ class movingAverageTrader():
         given return at index t in self.df
         """
 
+        self._pos *= (1 - self.trading_fee)
         self.df.loc[t, 'returns'] += returns*self._pos
 
     
@@ -110,9 +115,9 @@ class movingAverageTrader():
 
         self._entry_price = self.getSpotPrice(t) 
         if pos_type == 'L':
-            self._pos = 1 
+            self._pos = 1*(1 - self.trading_fee)
         elif pos_type == 'S':
-            self._pos = -1 
+            self._pos = -1*(1 - self.trading_fee)
 
     
     def closePosition(self, t):

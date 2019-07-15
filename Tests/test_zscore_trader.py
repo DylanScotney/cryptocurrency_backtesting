@@ -8,3 +8,4 @@ import numpy as np
 from ..Lib.zscore_trend_trader import zscoreTrader
 
 
+    
