@@ -6,7 +6,8 @@ from matplotlib.ticker import FuncFormatter
 
 from ..Lib.data_loader import dataLoader
 from ..Lib.file_loading_strategies import fileLoadingDF, fileLoadingRaw
-from ..Lib.cross_over_trader import crossOverTrading
+from ..Lib.crossover_trading_strategy import crossoverTrading
+from ..Lib.strategy_backtester import backtest
 
 cpath = os.path.dirname(__file__) # current path
 
@@ -53,7 +54,8 @@ def main():
                 MAf = MA_list[i]
                 print("Trading {} for {} v {}".format(symbol, MAs, MAf))
                 asset_df = df[['date', symbol]].reset_index()
-                trader = crossOverTrading(asset_df, symbol, MA_type, MAs, fast_MA=MAf,trading_fee=0.001)
+                strategy = crossoverTrading(asset_df, symbol, MA_type, MAs, fast_MA=MAf,trading_fee=0.001)
+                trader = backtest(strategy)
                 trader.trade()
 
                 if plot_results:

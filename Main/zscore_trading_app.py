@@ -5,7 +5,8 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 from ..Lib.file_loading_strategies import fileLoadingDF
-from ..Lib.zscore_trend_trader import zscoreTrading
+from ..Lib.zscore_trading_strategy import zScoreTrading
+from ..Lib.strategy_backtester import backtest
 
 cpath = os.path.dirname(__file__) # current path
 
@@ -68,10 +69,12 @@ def main():
                         ylabels.append('{}v{}'.format(MA,MAfast))
 
                     for j in range(len(ZScore_MAs)):  
+                        print(symbol, MAs, MAfast)
                         Z_MA = ZScore_MAs[j]                              
                         asset_df = df[['date', symbol]].reset_index()
-                        trader = zscoreTrading(asset_df, symbol, "SMA", MA, 
-                                               Z_MA, bandwidth, fast_MA=MAfast)
+                        strategy = zScoreTrading(asset_df, symbol, "SMA", MA, 
+                                                 Z_MA, bandwidth, fast_MA=MAfast)
+                        trader = backtest(strategy)
                         trader.trade()
 
                         if plot_results:
