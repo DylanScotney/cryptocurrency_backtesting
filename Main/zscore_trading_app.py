@@ -50,60 +50,54 @@ def main():
     # Execute trading
     #--------------------------------------------------------------------------
     for bandwidth in bandwidths:
-        
         if save_results:
             df_csv = df[['date']]
 
         for symbol in symbols:
 
             for i in range(len(MAs)): 
-
                 # Define SMA periods for trends
                 MA = MAs[i]
-                faster_MAs = np.linspace(1, MA, num=num_faster_MAs, endpoint=False)
+                faster_MAs = np.linspace(1, MA, num=num_faster_MAs, 
+                                         endpoint=False)
                 faster_MAs = [int(item) for item in faster_MAs]
 
-                for k in range(len(faster_MAs)):   
- 
+                for k in range(num_faster_MAs):    
                     MAfast = faster_MAs[k]
                     if plot_results:                    
                         ylabels.append('{}v{}'.format(MA,MAfast))
 
                     for j in range(len(ZScore_MAs)):  
-                        Z_MA = ZScore_MAs[j]      
-                        
-                        print(symbol, MA, MAfast, Z_MA, bandwidth)
+                        Z_MA = ZScore_MAs[j]                              
                         asset_df = df[['date', symbol]].reset_index()
-                        #trader = zscoreTrader(asset_df, symbol, MA,
-                        #                      Z_MA, bandwidth, 
-                        #                      fast_MA_period=MAfast)
-                        trader = zscoreTrading(asset_df, symbol, "SMA", MA, Z_MA, bandwidth, fast_MA=MAfast)
+                        trader = zscoreTrading(asset_df, symbol, "SMA", MA, 
+                                               Z_MA, bandwidth, fast_MA=MAfast)
                         trader.trade()
 
                         if plot_results:
-                            loc = num_faster_MAs*i + k, j # plot location
+                            loc = num_faster_MAs*i + k, j 
                             returns[loc] = asset_df['returns'].cumsum().iloc[-1]
                         if save_results:
-                            header = '{}_{}v{}_{}_{}'.format(symbol, MA, MAfast,
-                                                             Z_MA, bandwidth)
-                            df_csv[header] = asset_df['returns']
+                            key = '{}_{}v{}_{}_{}'.format(symbol, MA, MAfast,
+                                                          Z_MA, bandwidth)
+                            df_csv[key] = asset_df['returns']
 
-            if plot_results:
-                plt.imshow(returns, cmap='RdBu')
-                plt.colorbar(format=FuncFormatter(fmt))
-                max_ret = max(returns.min(), returns.max(), key=abs)
-                plt.clim(vmin=-max_ret, vmax=max_ret)
-                plt.yticks(np.arange(len(ylabels)), ylabels)
-                plt.xticks(np.arange(len(ZScore_MAs)), ZScore_MAs)
-                plt.ylabel("SMA Period")
-                plt.xlabel("Z Score Period")
-                plt.title("{}/BTC Bandwidth={}".format(symbol, bandwidth))
-                if save_results:
-                    plt.savefig('{}_BTC_bw{}.png'. format(symbol, bandwidth))
-                plt.show()
+        if plot_results:
+            returns = returns/23.0
+            plt.imshow(returns, cmap='RdBu')
+            plt.colorbar(format=FuncFormatter(fmt))
+            max_ret = max(returns.min(), returns.max(), key=abs)
+            plt.clim(vmin=-max_ret, vmax=max_ret)
+            plt.yticks(np.arange(len(ylabels)), ylabels)
+            plt.xticks(np.arange(len(ZScore_MAs)), ZScore_MAs)
+            plt.ylabel("SMA Period")
+            plt.xlabel("Z Score Period")
+            plt.title("{}/BTC Bandwidth={}".format(symbol, bandwidth))
+            if save_results:
+                plt.savefig('{}_BTC_bw{}.png'. format(symbol, bandwidth))
+            plt.show()
         
         if save_results:
-            results_outfile = cpath +"\\..\\Data\\extra_bw{}.csv".format(bandwidth)
             df_csv.to_csv(results_outfile)
     #--------------------------------------------------------------------------
 
