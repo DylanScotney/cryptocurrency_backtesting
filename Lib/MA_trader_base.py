@@ -3,6 +3,24 @@ import pandas as pd
 import abc
 
 class movingAverageTrading(metaclass=abc.ABCMeta):
+    """
+    A base class for trading strategies that are based around moving
+    average analysis. This class does not implement any trading.
+    plotTrading and Trade methods are abstract. 
+
+    Initialisation:
+    - df:               (pandas DataFrame) containing asset price
+                        history
+    - asset_symbol:     (str) header of asset price history in df
+    - fast_MA:          (int) period of shorter, faster MA
+    - slow_MA:          (int) period of longer, slower MA
+    - MA_type:          (str) 'SMA' or 'EMA' for simple MA or 
+                        exponential MA
+    - trading_fee:      (double) fractional trading fee between 0 and 1
+
+    Notes:
+    - Currently designed to only open one positon at a time
+    """
     
 
     def __init__(self, df, asset_symbol, MA_type, slow_MA, fast_MA=1, trading_fee=0.0):

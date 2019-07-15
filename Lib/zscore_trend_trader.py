@@ -18,17 +18,17 @@ class zscoreTrading(movingAverageTrading):
     Initialisation:
     - df:               pandas dataframe containing asset price history
     - asset_symbol:     header of asset price history in df
-    - slow_MA:   period of a moving average that is used to
+    - slow_MA:          period of a moving average that is used to
                         to determine the trend
     - zscore_period:    lookback period for calculating z score
     - bandwidth:        bandwidth of zscore values on which trading
                         logic is executed. 
-    - fast_MA:   A MA period shorter than slow_MA that will
+    - fast_MA:          A MA period shorter than slow_MA that will
                         determine trend. If not specified period=0 
                         (i.e. spotprice is used)
 
     Notes:
-    Currently designed to only open one positon at a time
+    - Currently designed to only open one positon at a time
     """
 
 
