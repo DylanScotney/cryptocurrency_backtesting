@@ -53,7 +53,7 @@ def main():
                 MAf = MA_list[i]
                 print("Trading {} for {} v {}".format(symbol, MAs, MAf))
                 asset_df = df[['date', symbol]].reset_index()
-                trader = crossOverTrading(asset_df, symbol, MAf, MAs, MA_type, trading_fee=0.001)
+                trader = crossOverTrading(asset_df, symbol, MA_type, MAs, fast_MA=MAf,trading_fee=0.001)
                 trader.trade()
 
                 if plot_results:

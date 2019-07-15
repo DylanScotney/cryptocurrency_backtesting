@@ -28,9 +28,9 @@ class crossOverTrading(movingAverageTrading):
     - Opening a long simultaneously closes any open shorts
     """
 
-    def __init__(self, df, asset_symbol, fast_MA, slow_MA, MA_type, trading_fee=0.0):
-        args = (df, asset_symbol, fast_MA, slow_MA, MA_type)
-        kwargs = {"trading_fee" : trading_fee}
+    def __init__(self, df, asset_symbol, MA_type, slow_MA, fast_MA=1, trading_fee=0.0):
+        args = (df, asset_symbol, MA_type, slow_MA)
+        kwargs = {"fast_MA" : fast_MA, "trading_fee" : trading_fee}
         super(crossOverTrading, self).__init__(*args, **kwargs)
 
     

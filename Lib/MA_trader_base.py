@@ -3,8 +3,9 @@ import pandas as pd
 import abc
 
 class movingAverageTrading(metaclass=abc.ABCMeta):
+    
 
-    def __init__(self, df, asset_symbol, fast_MA, slow_MA, MA_type, trading_fee=0.0):
+    def __init__(self, df, asset_symbol, MA_type, slow_MA, fast_MA=1, trading_fee=0.0):
         if not isinstance(df, pd.DataFrame):
             raise ValueError("df must be a pandas DataFrame")
         if not isinstance(asset_symbol, str):
@@ -51,12 +52,14 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
         in self.df
         """  
 
-        if self.MA_type == 'SMA':
-            self.df[self.MAf_str] = self.df[self.sym].rolling(window=self.MAf_period).mean()      
-            self.df[self.MAs_str] = self.df[self.sym].rolling(window=self.MAs_period).mean()         
+        if self.MA_type == 'SMA':   
+            self.df[self.MAs_str] = self.df[self.sym].rolling(window=self.MAs_period).mean()              
+            if self.MAf_period > 1:
+                self.df[self.MAf_str] = self.df[self.sym].rolling(window=self.MAf_period).mean()          
         elif self.MA_type == 'EMA':
-            self.df[self.MAf_str] = self.df[self.sym].ewm(span=self.MAf_period).mean()
             self.df[self.MAs_str] = self.df[self.sym].ewm(span=self.MAs_period).mean()
+            if self.MAf_period > 1:
+                self.df[self.MAf_str] = self.df[self.sym].ewm(span=self.MAf_period).mean()
 
 
     def getSpotPrice(self, t):
@@ -70,7 +73,10 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
         """
         Gets the value of fast and slow MAs at index t in self.df
         """
-        return self.df.loc[t, self.MAs_str], self.df.loc[t, self.MAf_str]
+        if self.MAf_period == 1:
+            return self.df.loc[t, self.MAs_str], self.getSpotPrice(t)
+        else:
+            return self.df.loc[t, self.MAs_str], self.df.loc[t, self.MAf_str] 
 
     
     def _setTradeReturns(self, t, returns):
