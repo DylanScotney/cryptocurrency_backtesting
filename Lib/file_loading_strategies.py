@@ -5,7 +5,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from pandas.plotting import register_matplotlib_converters
 
-from .data_loading_strategy import dataLoadingStrat
+from .abstract_data_loading_strategy import dataLoadingStrat
 
 class fileLoadingRaw(dataLoadingStrat):
     """

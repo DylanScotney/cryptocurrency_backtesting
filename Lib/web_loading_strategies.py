@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import math
 import pandas as pd
 
-from .data_loading_strategy import dataLoadingStrat
+from .abstract_data_loading_strategy import dataLoadingStrat
 
 
 class webLoading(dataLoadingStrat):
