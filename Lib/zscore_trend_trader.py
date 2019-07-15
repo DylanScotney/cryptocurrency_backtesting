@@ -140,7 +140,6 @@ class zscoreTrader():
             self._pos = -1*(1 - self.trading_fee)
 
 
-    
     def closePosition(self, t):
         """
         Executes the logic behind closing a position and stores the

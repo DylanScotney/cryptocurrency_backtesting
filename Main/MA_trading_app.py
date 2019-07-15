@@ -6,7 +6,7 @@ from matplotlib.ticker import FuncFormatter
 
 from ..Lib.data_loader import dataLoader
 from ..Lib.file_loading_strategies import fileLoadingDF, fileLoadingRaw
-from ..Lib.MA_trend_trader import movingAverageTrader
+from ..Lib.cross_over_trader import crossOverTrading
 
 cpath = os.path.dirname(__file__) # current path
 
@@ -20,7 +20,7 @@ def fmt(x, pos):
 def main(): 
 
     save_results = True
-    plot_results = False
+    plot_results = True
     MA_type = 'SMA'
     if save_results:
         results_outfile = cpath + "\\..\\Data\\deleteme.csv"
@@ -53,7 +53,7 @@ def main():
                 MAf = MA_list[i]
                 print("Trading {} for {} v {}".format(symbol, MAs, MAf))
                 asset_df = df[['date', symbol]].reset_index()
-                trader = movingAverageTrader(asset_df, symbol, MAf, MAs, MA_type, trading_fee=0.001)
+                trader = crossOverTrading(asset_df, symbol, MAf, MAs, MA_type, trading_fee=0.001)
                 trader.trade()
 
                 if plot_results:
