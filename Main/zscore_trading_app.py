@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 from ..Lib.file_loading_strategies import fileLoadingDF
-from ..Lib.zscore_trend_trader import zscoreTrader
+from ..Lib.zscore_trend_trader import zscoreTrading
 
 cpath = os.path.dirname(__file__) # current path
 
@@ -19,7 +19,7 @@ def fmt(x, pos):
 def main():
 
     save_results = True
-    plot_results = False
+    plot_results = True
     if save_results:
         results_outfile = cpath +"\\..\\Data\\dualSMAZscores.csv"
 
@@ -36,9 +36,9 @@ def main():
     # Define trading parameters
     #--------------------------------------------------------------------------
     symbols = [key for key in df.keys() if key not in ['date']]
-    bandwidths = [1.0, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0]
+    bandwidths = [2.0]#[1.0, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0]
     MAs = [80, 100]
-    num_faster_MAs = 10 # number of faster MAs for each MA
+    num_faster_MAs = 4 # number of faster MAs for each MA
     ZScore_MAs = [5, 6, 7, 8, 10, 12, 14, 15, 20, 30, 50, 80, 100]
     ylabels = []
 
@@ -74,9 +74,10 @@ def main():
                         
                         print(symbol, MA, MAfast, Z_MA, bandwidth)
                         asset_df = df[['date', symbol]].reset_index()
-                        trader = zscoreTrader(asset_df, symbol, MA,
-                                              Z_MA, bandwidth, 
-                                              fast_MA_period=MAfast)
+                        #trader = zscoreTrader(asset_df, symbol, MA,
+                        #                      Z_MA, bandwidth, 
+                        #                      fast_MA_period=MAfast)
+                        trader = zscoreTrading(asset_df, symbol, "SMA", MA, Z_MA, bandwidth, fast_MA=MAfast)
                         trader.trade()
 
                         if plot_results:
@@ -87,19 +88,19 @@ def main():
                                                              Z_MA, bandwidth)
                             df_csv[header] = asset_df['returns']
 
-        if plot_results:
-            plt.imshow(returns, cmap='RdBu')
-            plt.colorbar(format=FuncFormatter(fmt))
-            max_ret = max(returns.min(), returns.max(), key=abs)
-            plt.clim(vmin=-max_ret, vmax=max_ret)
-            plt.yticks(np.arange(len(ylabels)), ylabels)
-            plt.xticks(np.arange(len(ZScore_MAs)), ZScore_MAs)
-            plt.ylabel("SMA Period")
-            plt.xlabel("Z Score Period")
-            plt.title("{}/BTC Bandwidth={}".format(symbol, bandwidth))
-            if save_results:
-                plt.savefig('{}_BTC_bw{}.png'. format(symbol, bandwidth))
-            plt.show()
+            if plot_results:
+                plt.imshow(returns, cmap='RdBu')
+                plt.colorbar(format=FuncFormatter(fmt))
+                max_ret = max(returns.min(), returns.max(), key=abs)
+                plt.clim(vmin=-max_ret, vmax=max_ret)
+                plt.yticks(np.arange(len(ylabels)), ylabels)
+                plt.xticks(np.arange(len(ZScore_MAs)), ZScore_MAs)
+                plt.ylabel("SMA Period")
+                plt.xlabel("Z Score Period")
+                plt.title("{}/BTC Bandwidth={}".format(symbol, bandwidth))
+                if save_results:
+                    plt.savefig('{}_BTC_bw{}.png'. format(symbol, bandwidth))
+                plt.show()
         
         if save_results:
             results_outfile = cpath +"\\..\\Data\\extra_bw{}.csv".format(bandwidth)
