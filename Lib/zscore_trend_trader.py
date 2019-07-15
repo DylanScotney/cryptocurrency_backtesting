@@ -31,7 +31,7 @@ class zscoreTrader():
     """
 
 
-    def __init__(self, df, asset_symbol, slow_MA_period, zscore_period, bandwidth, fast_MA_period=1):
+    def __init__(self, df, asset_symbol, slow_MA_period, zscore_period, bandwidth, fast_MA_period=1, trading_fee=0.0):
         if not isinstance(df, pd.DataFrame):
             raise ValueError("df must be a pandas DataFrame")
         if not isinstance(asset_symbol, str):
@@ -43,7 +43,9 @@ class zscoreTrader():
         if not isinstance(slow_MA_period, int) or slow_MA_period < 2:
             raise ValueError("slow_MA_period period must be an int > 2")
         if not isinstance(fast_MA_period, int) or fast_MA_period < 1:
-            raise ValueError("fast_MA period must be a positive int")
+            raise ValueError("fast_MA period must be a positive int")        
+        if trading_fee < 0 or trading_fee > 1:
+            raise ValueError("Trading fee must be between 0 and 1.")
 
         self.df = df
         self.sym = asset_symbol
@@ -51,6 +53,7 @@ class zscoreTrader():
         self.fast_MA_period = fast_MA_period
         self.zscore_period = zscore_period 
         self.bandwith = bandwidth
+        self.trading_fee = trading_fee 
 
         # Strings for dataframe headers
         self.MAs_str = '{}SMA'.format(slow_MA_period) # Slow MA
@@ -121,6 +124,8 @@ class zscoreTrader():
         Private function used by self.closePosition() that stores a given return
         at index t in self.df
         """
+
+        self._pos *= (1 - self.trading_fee)
         self.df.loc[t, 'returns'] += returns*self._pos
 
 
@@ -130,9 +135,10 @@ class zscoreTrader():
         """        
         self._entry_price = self.getSpotPrice(t) 
         if pos_type == 'L':
-            self._pos = 1 
+            self._pos = 1*(1 - self.trading_fee)
         elif pos_type == 'S':
-            self._pos = -1 
+            self._pos = -1*(1 - self.trading_fee)
+
 
     
     def closePosition(self, t):
