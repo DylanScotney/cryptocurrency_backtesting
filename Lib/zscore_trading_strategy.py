@@ -89,7 +89,7 @@ class zScoreTrading(movingAverageTrading):
         plt.subplot(311)
         self.df.loc[t0:T, self.sym].plot(label=self.sym)
         self.df.loc[t0:T,self.MAs_str].plot(label='slow SMA')        
-        if self.MAf_period > 0:
+        if self.MAf_period > 1:
             self.df.loc[t0:T,self.MAf_str].plot(label='fast SMA')
         zscore_MA[t0:T].plot(label='Z score SMA')
         plt.ylabel('{}/BTC'.format(self.sym))
