@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 import pandas as pd
 
-from .abstract_MA_trading_stategy import movingAverageTrading
+from .abstract_MA_trading_strategy import movingAverageTrading
 
 class zScoreTrading(movingAverageTrading):
     """

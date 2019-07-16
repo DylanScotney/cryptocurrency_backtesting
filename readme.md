@@ -1,4 +1,4 @@
-# Title
+# (--Title--)
 ## Dylan Scotney
 ### _Deparment of Physics, University College London_ 
 ### Accompanying code for [Thesis](---Add Thesis File---)
@@ -49,7 +49,8 @@ lookback = 100 # get 100 hours
 outfile_raw = "myrawdata.json" # store raw data here
 outfile_df = "mycloseprices.csv" #store dataframe of closes here
 
-loading_strat = webLoading(symbols, ticksize, enddate, lookback, outfile_raw, outfile_df)
+loading_strat = webLoading(symbols, ticksize, enddate, lookback,
+                           outfile_raw, outfile_df)
 loader = dataLoader(loading_strat)
 data = loader.get_data()
 ```
@@ -72,6 +73,14 @@ loading_strat = fileLoadingDF(infile)
 loader = dataLoader(loading_strat)
 data = loader.get_data()
 ```
+
+All three approaches store close prices in a pandas dataframe along with 
+corresponding dates
+
+#### Backtesting
+Trading strateies are built and tested again using a stratergy pattern:
+* Context class: [backtest](\\Lib\\strategy_backtester.py)
+* Abstract interface class: [movingAverageTrading](\\Lib\\abstract_MA_trading_strategy.py)
 
 
 
