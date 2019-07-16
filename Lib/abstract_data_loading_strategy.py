@@ -1,5 +1,5 @@
-
 import abc
+
 
 class dataLoadingStrat(metaclass=abc.ABCMeta):
     """
