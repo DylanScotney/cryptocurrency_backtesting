@@ -11,19 +11,12 @@ from ..Lib.strategy_backtester import backtest
 cpath = os.path.dirname(__file__) # current path
 
 
-def fmt(x, pos):
-    """
-    A Simple format function used for colourbar formatting
-    """
-    return '{}%'.format(np.round(x, 0))
-
 def main():
 
     save_results = False
     plot_results = True
     if save_results:
-        results_outfile = cpath +"\\..\\Data\\dualSMAZscores.csv"
-
+        results_outfile = "dualSMAZscores"
     
     # Load Dataframe
     #--------------------------------------------------------------------------
@@ -39,59 +32,61 @@ def main():
     symbols = [key for key in df.keys() if key not in ['date']]
     bandwidths = [2.0]#[1.0, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0]
     MAs = [40, 80]
-    num_faster_MAs = 4 # number of faster MAs for each MA
+    num_faster_MAs = 4 # number of faster MAs for each MAslow
     ZScore_MAs = [2, 3, 4, 5, 10]
     ylabels = []
-
-    
     #--------------------------------------------------------------------------
-    
     
     # Execute trading
     #--------------------------------------------------------------------------
-    count = 0
     for bandwidth in bandwidths:
         if save_results:
             df_csv = df[['date']]
         if plot_results:
-            returns = np.zeros((len(MAs)*num_faster_MAs, len(ZScore_MAs))) # store final returns
+            returns = np.zeros((len(MAs)*num_faster_MAs, len(ZScore_MAs))) 
 
-        for symbol in symbols:
+        for count, symbol in enumerate(symbols):
 
             for i in range(len(MAs)): 
-                # Define SMA periods for trends
-                MA = MAs[i]
-                faster_MAs = np.linspace(1, MA, num=num_faster_MAs, 
+                MAslow = MAs[i]
+                faster_MAs = np.linspace(1, MAslow, num=num_faster_MAs, 
                                          endpoint=False)
                 faster_MAs = [int(item) for item in faster_MAs]
 
                 for k in range(num_faster_MAs):    
                     MAfast = faster_MAs[k]
-                    if plot_results and count==0:                    
-                        ylabels.append('{}v{}'.format(MA,MAfast))
+                    if plot_results and count==0:     
+                        # only append for first symbol so no repetitions               
+                        ylabels.append('{}v{}'.format(MAslow, MAfast))
 
                     for j in range(len(ZScore_MAs)):  
-                        Z_MA = ZScore_MAs[j]        
-                        
-                        print(symbol, MA, MAfast, Z_MA)                      
+                        Z_MA = ZScore_MAs[j]                                
+                        print("Trading {} for {}v{} {} bw={}".format(symbol,
+                                                                     MAslow, 
+                                                                     MAfast, 
+                                                                     Z_MA, 
+                                                                     bandwidth)  
                         asset_df = df[['date', symbol]].reset_index()
-                        strategy = zScoreTrading(asset_df, symbol, "SMA", MA, 
-                                                 Z_MA, bandwidth, fast_MA=MAfast)
+                        strategy = zScoreTrading(asset_df, symbol, "SMA", 
+                                                 MAslow, Z_MA, bandwidth, 
+                                                 fast_MA=MAfast)
                         trader = backtest(strategy, plot_results=True)
                         trader.trade()
 
                         if plot_results:
                             loc = num_faster_MAs*i + k, j 
                             returns[loc] += asset_df['returns'].cumsum().iloc[-1]
+
                         if save_results:
-                            key = '{}_{}v{}_{}_{}'.format(symbol, MA, MAfast,
-                                                          Z_MA, bandwidth)
+                            key = '{}_{}v{}_{}_{}'.format(symbol, MAslow, 
+                                                         MAfast, Z_MA, 
+                                                         bandwidth)
                             df_csv[key] = asset_df['returns']
             count+=1
 
         if plot_results:            
             num_symbols = len(symbols)
-            returns = returns*100/num_symbols
+            returns = returns*100/num_symbols # average percentage rets
             plt.imshow(returns, cmap='RdBu')
             plt.colorbar(format=FuncFormatter(fmt))
             max_ret = max(returns.min(), returns.max(), key=abs)
@@ -106,9 +101,17 @@ def main():
             plt.show()
         
         if save_results:
+            outfile = cpath +"\\..\\Data\\{}_bw{}.csv".format(results_outfile, 
+                                                              bandwidth)
             df_csv.to_csv(results_outfile)
     #--------------------------------------------------------------------------
 
+
+def fmt(x, pos):
+    """
+    Formats colourbar to display as a percentage
+    """
+    return '{}%'.format(np.round(x, 0))
     
 
 
