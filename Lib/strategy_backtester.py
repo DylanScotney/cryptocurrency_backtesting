@@ -29,6 +29,10 @@ class backtest():
     def trade(self):
         """
         Implements the stategies trading method. 
+
+        trade() method of each strategy stores returns in inputted 
+        df['returns']. See crossover_trading_strategy.py or 
+        zscore_trading_strategy.py for more details. 
         """
         
         self._strategy.trade(plot=self.plot_results)

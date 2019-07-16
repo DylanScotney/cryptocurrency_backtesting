@@ -9,6 +9,9 @@ class zScoreTrading(movingAverageTrading):
     attempts to capitalise on the over compensation of moves in the 
     cryptocurrency market.
 
+    Returns are stored under df['returns']. Refer to base class, 
+    movingAverageTrading for more details. 
+
     Uses a (typically longer) moving average to determine the overall 
     trend. Only longs (shorts) trades will be executed if asset is in 
     uptrend (downtrend).

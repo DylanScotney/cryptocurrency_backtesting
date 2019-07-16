@@ -12,6 +12,9 @@ class crossoverTrading(movingAverageTrading):
     Uses a longer (slower) moving average and a shorter (faster)
     moving average. Will enter a long if faster MA crosses upwards 
     through slower MA and a short if it crosses downwards.
+    
+    Returns are stored under df['returns']. Refer to base class, 
+    movingAverageTrading for more details. 
 
     Initialisation:
     - df:               (pandas DataFrame) containing asset price
@@ -28,7 +31,8 @@ class crossoverTrading(movingAverageTrading):
     - Opening a long simultaneously closes any open shorts
     """
 
-    def __init__(self, df, asset_symbol, MA_type, slow_MA, fast_MA=1, trading_fee=0.0):
+    def __init__(self, df, asset_symbol, MA_type, 
+                 slow_MA, fast_MA=1, trading_fee=0.0):
         args = (df, asset_symbol, MA_type, slow_MA)
         kwargs = {"fast_MA" : fast_MA, "trading_fee" : trading_fee}
         super(crossoverTrading, self).__init__(*args, **kwargs)

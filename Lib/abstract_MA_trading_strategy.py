@@ -8,6 +8,10 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
     average analysis. This class does not implement any trading.
     plotTrading and Trade methods are abstract. 
 
+    Strategies assume a fixed position size and stores returns from a 
+    round trip trade in df['returns'] for the corresponding time index
+    as a decimal (i.e 0.3 == +30% or -0.2 == -20%) 
+
     Initialisation:
     - df:               (pandas DataFrame) containing asset price
                         history
