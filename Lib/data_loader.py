@@ -2,7 +2,7 @@
 class dataLoader():
     """
     Context class for loading data.
-    Has strategies derived from fileLoader, webLoader classes. 
+    Has strategies derived from fileLoader, webLoader classes.
     See readme.md for more info.
     """
 
