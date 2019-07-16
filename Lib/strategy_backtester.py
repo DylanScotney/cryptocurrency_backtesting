@@ -8,6 +8,18 @@ class backtest():
                             crossoverTrading, zScoreTrading. 
     - plot_results:         bool to indicate whether to plot trading
                             activity.
+
+    Example usage:
+    ```
+    MA_type = "SMA" # simple moving average 
+    MAslow = 40 # slow moving average period
+    MAfast = 10 # fast MA period
+
+    strategy = crossoverTrading(<asset df>, <asset sym>, MA_type, 
+                                MAslow, fast_MA=MAfast)
+    trader = backtest(strategy)
+    trader.trade()
+    ```
     """
 
     def __init__(self, strategy, plot_results=False):
