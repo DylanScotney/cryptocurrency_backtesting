@@ -13,15 +13,15 @@ crypto exchanges giving you reliable and up-to-date traded rates that
 are used globally. We have systems in place to remove irregular prices, 
 giving you the cleanest prices available. [Read more](https://www.cryptocompare.com/media/27010937/cccagg_methodology_2018-02-26.pdf).
 
-#### Requirements:
-This package uses the following libraries, and any of their dependencies. 
+#### Dependencies:
+This package uses the following libraries, and any of their subsequent dependencies. 
 
 * abc
 * datetime
 * json
-* maths
 * matplotlib
 * numpy
+* pandas
 * pykalman
 * requests
 * statsmodels ([NOTE: Incompatible with SciPy 1.13 [20/06/2019]](https://github.com/statsmodels/statsmodels/issues/5759)) 
@@ -33,16 +33,46 @@ This package uses the following libraries, and any of their dependencies.
 Data loading/management is built using a strategy pattern:
 
 * Context class: [dataLoader](\\Lib\\data_loader.py)
-* abstract interface class: [dataLoadingStrat](\\Lib\\data_loading_strategy.py)
+* abstract interface class: [dataLoadingStrat](\\Lib\\abstract_data_loading_strategy.py)
 * concrete implementation 1: [webLoading](\\Lib\\web_loading_strategies.py)
 * concrete implentation 2: [fileLoadingRaw](\\Lib\\file_loading_strategies.py)
 * concrete implementation 3: [fileLoadingDF](\\Lib\\file_loading_strategies.py)
 
-An example useage: 
+Example useage:
+
+webLoading
 ```
-loading_strat = fileLoadingDF(infile)
+symbols = [sym.rstrip('\n') for sym in open("alistofsymbols.txt")]
+ticksize = "hour"
+enddate = datetime(2019,6,1) # using datetime module 
+lookback = 100 # get 100 hours
+outfile_raw = "myrawdata.json" # store raw data here
+outfile_df = "mycloseprices.csv" #store dataframe of closes here
+
+loading_strat = webLoading(symbols, ticksize, enddate, lookback, outfile_raw, outfile_df)
 loader = dataLoader(loading_strat)
 data = loader.get_data()
 ```
+
+fileloadingRaw
+```
+infile = "myrawdata.json" # raw data stored by webLoading
+symbols = [sym.rstrip('\n') for sym in open("alistofsymbols.txt")]
+ticksize = "hour"
+
+loading_strat = fileLoadingRaw(infile)
+loader = dataLoader(loading_strat)
+data = loader.get_data()
+```
+
+fileloadingDF
+```
+infile = "mydataframe.csv"
+loading_strat = fileLoadingDF(infile) 
+loader = dataLoader(loading_strat)
+data = loader.get_data()
+```
+
+
 
 
