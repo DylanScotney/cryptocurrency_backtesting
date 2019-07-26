@@ -17,6 +17,7 @@ class Position():
         self._pos = 0
         self._entryprice = 0
         self._exitprice = 0
+        self._tradereturn = 0
 
     def setEntryPrice(self, price):
         """
@@ -29,7 +30,16 @@ class Position():
         """
         Sets exit price for a position
         """
+
         self._exitprice = price
+
+    def setTradeReturn(self):
+        """
+        Calculates the round trip trade return as a fraction.
+        """
+
+        Exit, Entry = self.getExitPrice(), self.getEntryPrice
+        self._tradereturn = self._pos*(Exit - Entry)/abs(Entry)
 
     def getEntryPrice(self):
         """
@@ -44,6 +54,12 @@ class Position():
         """
 
         return self._exitprice
+
+    def getTradeReturn(self):
+        """
+        Gets trade returns
+        """
+        return self._tradereturn
 
     def openPostition(self, price, pos_type, fee=0):
         """
@@ -64,24 +80,22 @@ class Position():
         if pos_type == 'S':
             self._pos = -1*(1-fee)
     
-    def closePosition(self, price):
+    def closePosition(self, price, fee=0):
         """
         Closes a position.
 
         Inputs:
         - price:            (double) price at which to close a position
-
-        Outputs:
-        - tradeReturn       (double) fractional return of the round trip
-                            trade.
+        - fee:              (double) fractional trading fee
         """
+
+        if fee >= 1:
+            raise ValueError("trading fee must be less than 1")
+
         self.setExitPrice(price)
-        Exit, Entry = self.getExitPrice(), self.setEntryPrice()
-        tradeReturn = (Exit - Entry)/abs(Entry)
+        self._pos *= (1 - fee)
+        self.setTradeReturn()
         self._pos = 0
-
-        return tradeReturn
-
 
 
     
