@@ -66,15 +66,6 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
         """
         return self.df.loc[t, self.sym]
 
-    def getMAs(self, t):
-        """
-        Gets the value of fast and slow MAs at index t in self.df
-        """
-        if self.fastMA.getPeriod() == 1:
-            return self.slowMA.getValue(t), self.getSpotPrice(t)
-        else:
-            return self.slowMA.getValue(t), self.fastMA.getValue(t)
-
     def storeTradeReturns(self, t):
         """
         Stores trade returns in dataframe

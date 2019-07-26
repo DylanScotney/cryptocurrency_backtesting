@@ -127,7 +127,8 @@ class zScoreTrading(movingAverageTrading):
         closetimes = []
 
         for t in range(self.slowMA.getPeriod(), self.df.shape[0]):
-            slowMA_t, fastMA_t = self.getMAs(t)
+            slowMA_t = self.slowMA.getValue(t)
+            fastMA_t = self.fastMA.getValue(t)
             Z_t = self.getZScore(t)
             Z_t_1 = self.getZScore(t-1)
 

@@ -82,8 +82,10 @@ class crossoverTrading(movingAverageTrading):
         shorttimes = []
 
         for t in range(self.slowMA.getPeriod() + 1, self.df.shape[0]):
-            slowMA_t, fastMA_t = self.getMAs(t)
-            slowMA_t_1, fastMA_t_1 = self.getMAs(t-1)
+            slowMA_t = self.slowMA.getValue(t)
+            fastMA_t = self.fastMA.getValue(t)
+            slowMA_t_1 = self.slowMA.getValue(t-1)
+            fastMA_t_1 = self.fastMA.getValue(t-1)
 
             if fastMA_t > slowMA_t and fastMA_t_1 < slowMA_t_1:
                 spotprice = self.getSpotPrice(t)

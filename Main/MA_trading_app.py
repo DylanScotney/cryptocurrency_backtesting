@@ -17,7 +17,7 @@ def main():
 
     save_results = False
     plot_results = True
-    MA_type = 'EMA'
+    MA_type = 'SMA'
     if save_results:
         results_outfile = cpath + "\\..\\Data\\EMA_results.csv"
     symbols = [symbol.rstrip('\n') for symbol in open(cpath+"\\..\\Data\\list_of_tickers.txt")]
