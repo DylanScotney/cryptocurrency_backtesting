@@ -49,7 +49,7 @@ class Position():
         """
 
         return self._entryprice
-    
+
     def getExitPrice(self):
         """
         Gets exit price for a position
@@ -84,7 +84,7 @@ class Position():
             self._pos = 1*(1-fee)
         if pos_type == 'S':
             self._pos = -1*(1-fee)
-    
+
     def closePosition(self, price, fee=0):
         """
         Closes a position.
@@ -103,4 +103,3 @@ class Position():
         self._pos *= (1 - fee)
         self.setTradeReturn()
         self._pos = 0
-
