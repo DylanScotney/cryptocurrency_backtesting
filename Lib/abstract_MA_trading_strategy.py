@@ -7,7 +7,7 @@ from .simple_moving_average_class import simpleMovingAverage
 from .exponential_moving_average_class import expMovingAverage
 
 
-class movingAverageTrading(metaclass=abc.ABCMeta):
+class movingAverageTrader(metaclass=abc.ABCMeta):
     """
     A base class for trading strategies that are based around moving
     average analysis. This class does not implement any trading.

@@ -8,7 +8,7 @@ from datetime import datetime
 from ..Lib.data_loader import dataLoader
 from ..Lib.file_loading_strategies import fileLoadingDF, fileLoadingRaw
 from ..Lib.web_loading_strategies import webLoading
-from ..Lib.crossover_trading_strategy import crossoverTrading
+from ..Lib.crossover_trading_strategy import crossoverTrader
 from ..Lib.strategy_backtester import backtest
 
 cpath = os.path.dirname(__file__) # current path
@@ -53,8 +53,8 @@ def main():
                 print("Trading {} for {} v {}".format(symbol, slow_MA, fast_MA))
 
                 asset_df = df[['date', symbol]].reset_index()
-                strategy = crossoverTrading(asset_df, symbol, MA_type, slow_MA, 
-                                            fast_MA=fast_MA, trading_fee=0.0)
+                strategy = crossoverTrader(asset_df, symbol, MA_type, slow_MA, 
+                                           fast_MA=fast_MA, trading_fee=0.0)
                 trader = backtest(strategy, plot_results=True)
                 trader.trade()
 

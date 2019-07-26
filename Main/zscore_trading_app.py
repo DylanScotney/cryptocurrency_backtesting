@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 from ..Lib.file_loading_strategies import fileLoadingDF
-from ..Lib.zscore_trading_strategy import zScoreTrading
+from ..Lib.zscore_trading_strategy import zScoreTrader
 from ..Lib.strategy_backtester import backtest
 
 cpath = os.path.dirname(__file__) # current path
@@ -68,9 +68,9 @@ def main():
                                                                      Z_MA, 
                                                                      bandwidth))  
                         asset_df = df[['date', symbol]].reset_index()
-                        strategy = zScoreTrading(asset_df, symbol, "SMA", 
-                                                 MAslow, Z_MA, bandwidth, 
-                                                 fast_MA=MAfast)
+                        strategy = zScoreTrader(asset_df, symbol, "SMA", 
+                                                MAslow, Z_MA, bandwidth, 
+                                                fast_MA=MAfast)
                         trader = backtest(strategy, plot_results=True)
                         trader.trade()
 

@@ -1,10 +1,10 @@
 from matplotlib import pyplot as plt
 import pandas as pd
 
-from .abstract_MA_trading_strategy import movingAverageTrading
+from .abstract_MA_trading_strategy import movingAverageTrader
 
 
-class crossoverTrading(movingAverageTrading):
+class crossoverTrader(movingAverageTrader):
     """
     A class that backtests a moving average based trading algorithm
     which attempts to capitalise on momentum and trends in the
@@ -36,7 +36,7 @@ class crossoverTrading(movingAverageTrading):
                  slow_MA, fast_MA=1, trading_fee=0.0):
         args = (df, asset_symbol, MA_type, slow_MA)
         kwargs = {"fast_MA": fast_MA, "trading_fee": trading_fee}
-        super(crossoverTrading, self).__init__(*args, **kwargs)
+        super(crossoverTrader, self).__init__(*args, **kwargs)
 
     def plotTrading(self, opentimes, closetimes):
         """
