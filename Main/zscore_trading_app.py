@@ -4,7 +4,7 @@ import os.path
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
-from ..Lib.file_loading_strategies import fileLoadingDF
+from ..Lib.data_loading.file_loading_strategies import fileLoadingDF
 from ..Lib.trading_strat_zscore import zScoreTrader
 from ..Lib.strategy_backtester import backtest
 

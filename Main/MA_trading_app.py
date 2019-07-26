@@ -5,9 +5,10 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from datetime import datetime
 
-from ..Lib.data_loader import dataLoader
-from ..Lib.file_loading_strategies import fileLoadingDF, fileLoadingRaw
-from ..Lib.web_loading_strategies import webLoading
+from ..Lib.data_loading.data_loader import dataLoader
+from ..Lib.data_loading.file_loading_strategies import fileLoadingDF
+from ..Lib.data_loading.file_loading_strategies import fileLoadingRaw
+from ..Lib.data_loading.web_loading_strategies import webLoading
 from ..Lib.trading_strat_crossover import crossoverTrader
 from ..Lib.strategy_backtester import backtest
 
