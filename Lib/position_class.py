@@ -1,5 +1,17 @@
 
 class Position():
+    """
+    Position class that handles trade positions.
+
+    Notes:
+    - Currently assumes positions are fixed size of "one unit" so
+    so returns are given in terms of percentage rather than absolute
+    amount
+
+    To Do:
+    - Add a position ID system for trade history analysis
+    - Add position sizings to give returns in absolute amounts
+    """
 
     def __init__(self):
         self._pos = 0
