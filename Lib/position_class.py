@@ -63,6 +63,12 @@ class Position():
         """
         return self._tradereturn
 
+    def getPosition(self):
+        """
+        Gets current position
+        """
+        return self._pos
+
     def open(self, price, pos_type, fee=0):
         """
         Opens a position.
