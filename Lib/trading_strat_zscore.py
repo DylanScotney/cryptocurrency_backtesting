@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 from .trading_strat_abstract_MA import movingAverageTrader
+from .zscore_class import zScore
 
 
 class zScoreTrader(movingAverageTrader):
@@ -44,28 +45,8 @@ class zScoreTrader(movingAverageTrader):
         kwargs = {"fast_MA": fast_MA, "trading_fee": trading_fee}
         super(zScoreTrader, self).__init__(*args, **kwargs)
 
-        self.zscore_period = zscore_period
+        self.zscore = zScore(df[self.sym], zscore_period)
         self.bandwith = bandwidth
-
-        self.Z_str = '{}Z'.format(zscore_period)
-        self.generateZscore()
-
-    def generateZscore(self):
-        """
-        Generates the Z score of the asset and stores in the dataframe
-        Note: this function is called on initialisation.
-        """
-
-        mean = self.df[self.sym].rolling(window=self.zscore_period).mean()
-        std = self.df[self.sym].rolling(window=self.zscore_period).std()
-        self.df[self.Z_str] = (self.df[self.sym] - mean)/std
-
-    def getZScore(self, t):
-        """
-        Gets the value of the Z score at index t in self.df
-        """
-
-        return self.df.loc[t, self.Z_str]
 
     def plotTrading(self, opentimes, closetimes):
         """
@@ -86,21 +67,22 @@ class zScoreTrader(movingAverageTrader):
         bw = self.bandwith
         t0 = self.slowMA.getPeriod()
         T = self.df.shape[0]
-        zscore_MA = self.df[self.sym].rolling(window=self.zscore_period).mean()
+        zscore_MA = (self.df[self.sym]
+                     .rolling(window=self.zscore.getPeriod())
+                     .mean())
 
         plt.subplot(311)
         self.df.loc[t0:T, self.sym].plot(label=self.sym)
         self.slowMA.getArray().loc[t0:T].plot(label=self.slowMA.name)
         if self.fastMA.getPeriod() > 1:
             self.fastMA.getArray().loc[t0:T].plot(label=self.fastMA.name)
-        zscore_MA[t0:T].plot(label='Z score SMA')
         plt.ylabel('{}/BTC'.format(self.sym))
         [plt.axvline(x, c='g', lw=0.5, ls='--') for x in opentimes]
         [plt.axvline(x, c='r', lw=0.5, ls='--') for x in closetimes]
         plt.legend()
 
         plt.subplot(312)
-        self.df.loc[t0:T, self.Z_str].plot()
+        self.zscore.getArray().plot()
         plt.plot([t0, T], [bw, bw], c='k', ls='--', lw=0.5)
         plt.plot([t0, T], [-bw, -bw], c='k', ls='--', lw=0.5)
         plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)
@@ -129,8 +111,8 @@ class zScoreTrader(movingAverageTrader):
         for t in range(self.slowMA.getPeriod(), self.df.shape[0]):
             slowMA_t = self.slowMA.getValue(t)
             fastMA_t = self.fastMA.getValue(t)
-            Z_t = self.getZScore(t)
-            Z_t_1 = self.getZScore(t-1)
+            Z_t = self.zscore.getValue(t)
+            Z_t_1 = self.zscore.getValue(t-1)
 
             if fastMA_t > slowMA_t:
                 uptrend = True
