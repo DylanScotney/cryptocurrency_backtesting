@@ -138,28 +138,33 @@ class zScoreTrading(movingAverageTrading):
 
             # Open position logic
             # -----------------------------------------------------------------
-            if uptrend and self._pos == 0:
+            if uptrend and self.position.getPosition() == 0:
                 if Z_t > -self.bandwith and Z_t_1 < -self.bandwith:
-                    self.openPosition(t, 'L')
+                    spotprice = self.getSpotPrice(t)
+                    self.position.open(spotprice, 'L', fee=self.trading_fee)
                     if plot:
                         opentimes.append(t)
 
-            if not uptrend and self._pos == 0:
+            if not uptrend and self.position.getPosition() == 0:
                 if Z_t < self.bandwith and Z_t_1 > self.bandwith:
-                    self.openPosition(t, 'S')
+                    spotprice = self.getSpotPrice(t)
+                    self.position.open(spotprice, 'S', fee=self.trading_fee)
                     if plot:
                         opentimes.append(t)
             # -----------------------------------------------------------------
 
             # Close position logic
             # -----------------------------------------------------------------
-            if self._pos == 1 and Z_t > 0 and Z_t_1 < 0:
-                self.closePosition(t)
+            if self.position.getPosition() == 1 and Z_t > 0 and Z_t_1 < 0:
+                spotprice = self.getSpotPrice(t)
+                self.position.close(spotprice, fee=self.trading_fee)
+                self.storeTradeReturns(t)
                 if plot:
                     closetimes.append(t)
 
-            if self._pos == -1 and Z_t < 0 and Z_t_1 > 0:
-                self.closePosition(t)
+            if self.position.getPosition() == -1 and Z_t < 0 and Z_t_1 > 0:
+                spotprice = self.getSpotPrice(t)
+                self.position.close(spotprice, fee=self.trading_fee)
                 if plot:
                     closetimes.append(t)
             # -----------------------------------------------------------------

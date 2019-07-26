@@ -20,7 +20,7 @@ def main():
     
     # Load Dataframe
     #--------------------------------------------------------------------------
-    infile = cpath+"\\..\\Data\\daily_data.csv"
+    infile = cpath+"\\..\\Data\\cryptocompareBTC_10000_hours_df.csv"
     loader = fileLoadingDF(infile)
     df = loader.get_data()
     if save_results:
@@ -30,6 +30,7 @@ def main():
     # Define trading parameters
     #--------------------------------------------------------------------------
     symbols = [key for key in df.keys() if key not in ['date']]
+    symbols = ['ETH']
     bandwidths = [2.0]#[1.0, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0]
     MAs = [40, 80]
     num_faster_MAs = 4 # number of faster MAs for each MAslow
@@ -65,7 +66,7 @@ def main():
                                                                      MAslow, 
                                                                      MAfast, 
                                                                      Z_MA, 
-                                                                     bandwidth)  
+                                                                     bandwidth))  
                         asset_df = df[['date', symbol]].reset_index()
                         strategy = zScoreTrading(asset_df, symbol, "SMA", 
                                                  MAslow, Z_MA, bandwidth, 

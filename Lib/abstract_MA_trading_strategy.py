@@ -24,6 +24,8 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
     - MA_type:          (str) 'SMA' or 'EMA' for simple MA or
                         exponential MA
     - trading_fee:      (double) fractional trading fee between 0 and 1
+    - position:         (Position) position class object see
+                        position_class.py
 
     Notes:
     - Currently designed to only open one positon at a time
