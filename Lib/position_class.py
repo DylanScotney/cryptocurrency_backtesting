@@ -1,12 +1,14 @@
 
 class Position():
     """
-    Position class that handles trade positions.
+    Position class that handles a trade position. Opens and closes
+    positions and calculats the return
 
     Notes:
     - Currently assumes positions are fixed size of "one unit" so
     so returns are given in terms of percentage rather than absolute
     amount
+    - Only handles one position at a time
 
     To Do:
     - Add a position ID system for trade history analysis
@@ -73,6 +75,9 @@ class Position():
 
         if fee >= 1:
             raise ValueError("trading fee must be less than 1")
+        if self._pos != 0:
+            raise RuntimeError("Cannot open position."
+                               + "A position is already open")
 
         self.setEntryPrice(price)
         if pos_type == 'L':
@@ -91,12 +96,11 @@ class Position():
 
         if fee >= 1:
             raise ValueError("trading fee must be less than 1")
+        if self._pos == 0:
+            raise RuntimeError("No open position to close")
 
         self.setExitPrice(price)
         self._pos *= (1 - fee)
         self.setTradeReturn()
         self._pos = 0
-
-
-    
 
