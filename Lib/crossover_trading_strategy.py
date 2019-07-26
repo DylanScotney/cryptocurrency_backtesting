@@ -87,7 +87,7 @@ class crossoverTrading(movingAverageTrading):
 
             if MAf_t > MAs_t and MAf_t_1 < MAs_t_1:
                 spotprice = self.getSpotPrice(t)
-                if self.position._pos != 0:
+                if self.position.getPosition() != 0:
                     self.position.close(spotprice, fee=self.trading_fee)
                     self.storeTradeReturns(t)                
                 self.position.open(spotprice, 'L', fee=self.trading_fee)
@@ -95,7 +95,7 @@ class crossoverTrading(movingAverageTrading):
 
             if MAf_t < MAs_t and MAf_t_1 > MAs_t_1:
                 spotprice = self.getSpotPrice(t)
-                if self.position._pos != 0:
+                if self.position.getPosition() != 0:
                     self.position.close(spotprice, fee=self.trading_fee)
                     self.storeTradeReturns(t)                
                 self.position.open(spotprice, 'S', fee=self.trading_fee)
