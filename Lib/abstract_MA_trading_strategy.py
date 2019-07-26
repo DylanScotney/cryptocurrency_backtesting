@@ -2,6 +2,8 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import abc
 
+from .position_class import Position
+
 
 class movingAverageTrading(metaclass=abc.ABCMeta):
     """
@@ -54,8 +56,7 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
         self.trading_fee = trading_fee
 
         # initialise with no position or entries
-        self._entry_price = 0
-        self._pos = 0
+        self.position = Position()
         self.df['returns'] = 0.0
 
         # Generate moving averages upon initialisation
@@ -106,36 +107,12 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
         else:
             return self.df.loc[t, self.MAs_str], self.df.loc[t, self.MAf_str]
 
-    def _setTradeReturns(self, t, returns):
+    def storeTradeReturns(self, t):
         """
-        Private function used by self.closePosition() that stores a
-        given return at index t in self.df
-        """
-
-        self._pos *= (1 - self.trading_fee)
-        self.df.loc[t, 'returns'] += returns*self._pos
-
-    def openPosition(self, t, pos_type):
-        """
-        Executes the logic behind opening a position.
+        Stores trade returns in dataframe
         """
 
-        self._entry_price = self.getSpotPrice(t)
-        if pos_type == 'L':
-            self._pos = 1*(1 - self.trading_fee)
-        elif pos_type == 'S':
-            self._pos = -1*(1 - self.trading_fee)
-
-    def closePosition(self, t):
-        """
-        Executes the logic behind closing a position and stores the
-        returns in the df['returns']
-        """
-
-        exit_price = self.getSpotPrice(t)
-        tradeReturn = (exit_price - self._entry_price)/abs(self._entry_price)
-        self._setTradeReturns(t, tradeReturn)
-        self._pos = 0
+        self.df.loc[t, 'returns'] = self.position.getTradeReturn()
 
     @abc.abstractmethod
     def plotTrading(self, opentimes, closetimes):
