@@ -84,15 +84,15 @@ class zScoreTrading(movingAverageTrading):
         """
 
         bw = self.bandwith
-        t0 = self.MAs_period
+        t0 = self.slowMA.getPeriod()
         T = self.df.shape[0]
         zscore_MA = self.df[self.sym].rolling(window=self.zscore_period).mean()
 
         plt.subplot(311)
         self.df.loc[t0:T, self.sym].plot(label=self.sym)
-        self.df.loc[t0:T, self.MAs_str].plot(label='slow SMA')
-        if self.MAf_period > 1:
-            self.df.loc[t0:T, self.MAf_str].plot(label='fast SMA')
+        self.slowMA.getArray().loc[t0:T].plot(label=self.slowMA.name)
+        if self.fastMA.getPeriod() > 1:
+            self.fastMA.getArray().loc[t0:T].plot(label=self.fastMA.name)
         zscore_MA[t0:T].plot(label='Z score SMA')
         plt.ylabel('{}/BTC'.format(self.sym))
         [plt.axvline(x, c='g', lw=0.5, ls='--') for x in opentimes]
@@ -126,8 +126,8 @@ class zScoreTrading(movingAverageTrading):
         opentimes = []
         closetimes = []
 
-        for t in range(self.MAs_period, self.df.shape[0]):
-            slowMA_t, fastMA_t = self.getMA(t)
+        for t in range(self.slowMA.getPeriod(), self.df.shape[0]):
+            slowMA_t, fastMA_t = self.getMAs(t)
             Z_t = self.getZScore(t)
             Z_t_1 = self.getZScore(t-1)
 
