@@ -63,7 +63,7 @@ class Position():
         """
         return self._tradereturn
 
-    def openPostition(self, price, pos_type, fee=0):
+    def open(self, price, pos_type, fee=0):
         """
         Opens a position.
 
@@ -85,7 +85,7 @@ class Position():
         if pos_type == 'S':
             self._pos = -1*(1-fee)
 
-    def closePosition(self, price, fee=0):
+    def close(self, price, fee=0):
         """
         Closes a position.
 
