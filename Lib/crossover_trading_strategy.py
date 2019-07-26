@@ -50,13 +50,13 @@ class crossoverTrading(movingAverageTrading):
         opening longs and shorts respectively
         """
 
-        t0 = self.MAs_period
+        t0 = self.slowMA.getPeriod()
         T = self.df.shape[0]
         plt.subplot(211)
         self.df.loc[t0:T, self.sym].plot(label=self.sym)
-        self.df.loc[t0:T, self.MAs_str].plot(label=self.MAs_str)
-        if self.MAf_period > 1:
-            self.df.loc[t0:T, self.MAf_str].plot(label=self.MAf_str)
+        self.slowMA.getArray().loc[t0:T].plot(label=self.slowMA.name)
+        if self.fastMA.getPeriod() > 1:
+            self.fastMA.getArray().loc[t0:T].plot(label=self.fastMA.name)
         [plt.axvline(x, c='g', lw=0.5, ls='--') for x in opentimes]
         [plt.axvline(x, c='r', lw=0.5, ls='--') for x in closetimes]
         plt.ylabel('{}/BTC'.format(self.sym))
@@ -81,11 +81,11 @@ class crossoverTrading(movingAverageTrading):
         longtimes = []
         shorttimes = []
 
-        for t in range(self.MAs_period + 1, self.df.shape[0]):
-            MAs_t, MAf_t = self.getMA(t)
-            MAs_t_1, MAf_t_1 = self.getMA(t-1)
+        for t in range(self.slowMA.getPeriod() + 1, self.df.shape[0]):
+            slowMA_t, fastMA_t = self.getMAs(t)
+            slowMA_t_1, fastMA_t_1 = self.getMAs(t-1)
 
-            if MAf_t > MAs_t and MAf_t_1 < MAs_t_1:
+            if fastMA_t > slowMA_t and fastMA_t_1 < slowMA_t_1:
                 spotprice = self.getSpotPrice(t)
                 if self.position.getPosition() != 0:
                     self.position.close(spotprice, fee=self.trading_fee)
@@ -93,7 +93,7 @@ class crossoverTrading(movingAverageTrading):
                 self.position.open(spotprice, 'L', fee=self.trading_fee)
                 longtimes.append(t)
 
-            if MAf_t < MAs_t and MAf_t_1 > MAs_t_1:
+            if fastMA_t < slowMA_t and fastMA_t_1 > slowMA_t_1:
                 spotprice = self.getSpotPrice(t)
                 if self.position.getPosition() != 0:
                     self.position.close(spotprice, fee=self.trading_fee)

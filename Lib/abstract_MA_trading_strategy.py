@@ -3,6 +3,8 @@ import pandas as pd
 import abc
 
 from .position_class import Position
+from .simple_moving_average_class import simpleMovingAverage
+from .exponential_moving_average_class import expMovingAverage
 
 
 class movingAverageTrading(metaclass=abc.ABCMeta):
@@ -41,10 +43,6 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
             raise ValueError("asset symbol not in dataframe headers")
         if slow_MA < fast_MA:
             raise ValueError("Slower MA must have the shorter period")
-        if not isinstance(slow_MA, int) or slow_MA < 1:
-            raise ValueError("slow_MA period must be a positive int")
-        if not isinstance(fast_MA, int) or fast_MA < 1:
-            raise ValueError("fast_MA period must be a positive int")
         if MA_type != "EMA" and MA_type != "SMA":
             raise ValueError("MA type not supported. Try 'SMA' or 'EMA")
         if trading_fee < 0 or trading_fee > 1:
@@ -52,62 +50,30 @@ class movingAverageTrading(metaclass=abc.ABCMeta):
 
         self.df = df
         self.sym = asset_symbol
-        self.MAf_period = fast_MA
-        self.MAs_period = slow_MA
-        self.MA_type = MA_type
         self.trading_fee = trading_fee
-
-        # initialise with no position or entries
         self.position = Position()
         self.df['returns'] = 0.0
-
-        # Generate moving averages upon initialisation
-        if self.MA_type == 'EMA':
-            self.MAf_str = '{}EMA'.format(self.MAf_period)  # str for df keys
-            self.MAs_str = '{}EMA'.format(self.MAs_period)
-            self.generateMAs()
-        elif self.MA_type == 'SMA':
-            self.MAf_str = '{}SMA'.format(self.MAf_period)
-            self.MAs_str = '{}SMA'.format(self.MAs_period)
-            self.generateMAs()
-
-    def generateMAs(self):
-        """
-        Generates the faster and slower moving averages and stores them
-        in self.df
-        """
-
-        if self.MA_type == 'SMA':
-            self.df[self.MAs_str] = (self.df[self.sym]
-                                     .rolling(window=self.MAs_period)
-                                     .mean())
-            if self.MAf_period > 1:
-                self.df[self.MAf_str] = (self.df[self.sym]
-                                         .rolling(window=self.MAf_period)
-                                         .mean())
-        elif self.MA_type == 'EMA':
-            self.df[self.MAs_str] = (self.df[self.sym]
-                                     .ewm(span=self.MAs_period)
-                                     .mean())
-            if self.MAf_period > 1:
-                self.df[self.MAf_str] = (self.df[self.sym]
-                                         .ewm(span=self.MAf_period)
-                                         .mean())
-
+        if MA_type == 'SMA':
+            self.fastMA = simpleMovingAverage(df[self.sym], fast_MA)
+            self.slowMA = simpleMovingAverage(df[self.sym], slow_MA)
+        elif MA_type == 'EMA':
+            self.fastMA = expMovingAverage(df[self.sym], fast_MA)
+            self.slowMA = expMovingAverage(df[self.sym], slow_MA) 
+   
     def getSpotPrice(self, t):
         """
         Gets the spot price at index t in self.df
         """
         return self.df.loc[t, self.sym]
 
-    def getMA(self, t):
+    def getMAs(self, t):
         """
         Gets the value of fast and slow MAs at index t in self.df
         """
-        if self.MAf_period == 1:
-            return self.df.loc[t, self.MAs_str], self.getSpotPrice(t)
+        if self.fastMA.getPeriod() == 1:
+            return self.slowMA.getValue(t), self.getSpotPrice(t)
         else:
-            return self.df.loc[t, self.MAs_str], self.df.loc[t, self.MAf_str]
+            return self.slowMA.getValue(t), self.fastMA.getValue(t)
 
     def storeTradeReturns(self, t):
         """
