@@ -32,15 +32,15 @@ This package uses the following libraries, and any of their subsequent dependenc
 #### Data Loading
 Data loading/management is built using a strategy pattern:
 
-* Context class: [dataLoader](\\Lib\\data_loader.py)
-* abstract interface class: [dataLoadingStrat](\\Lib\\abstract_data_loading_strategy.py)
-* concrete implementation 1: [webLoading](\\Lib\\web_loading_strategies.py)
-* concrete implentation 2: [fileLoadingRaw](\\Lib\\file_loading_strategies.py)
-* concrete implementation 3: [fileLoadingDF](\\Lib\\file_loading_strategies.py)
+* Context class: [dataLoader()](\\Lib\\data_loader.py)
+* Abstract interface class: [dataLoadingStrat()](\\Lib\\abstract_data_loading_strategy.py)
+* Concrete implementation 1: [webLoading()](\\Lib\\web_loading_strategies.py)
+* Concrete implentation 2: [fileLoadingRaw()](\\Lib\\file_loading_strategies.py)
+* Concrete implementation 3: [fileLoadingDF()](\\Lib\\file_loading_strategies.py)
 
 Example useage:
 
-webLoading
+webLoading()
 ```
 symbols = [sym.rstrip('\n') for sym in open("alistofsymbols.txt")]
 ticksize = "hour"
@@ -55,7 +55,7 @@ loader = dataLoader(loading_strat)
 data = loader.get_data()
 ```
 
-fileloadingRaw
+fileloadingRaw()
 ```
 infile = "myrawdata.json" # raw data stored by webLoading
 symbols = [sym.rstrip('\n') for sym in open("alistofsymbols.txt")]
@@ -66,7 +66,7 @@ loader = dataLoader(loading_strat)
 data = loader.get_data()
 ```
 
-fileloadingDF
+fileloadingDF()
 ```
 infile = "mydataframe.csv"
 loading_strat = fileLoadingDF(infile) 
@@ -79,8 +79,41 @@ corresponding dates
 
 #### Backtesting
 Trading strateies are built and tested again using a stratergy pattern:
-* Context class: [backtest](\\Lib\\strategy_backtester.py)
-* Abstract interface class: [movingAverageTrading](\\Lib\\abstract_MA_trading_strategy.py)
+* Context class: [backtest()](\\Lib\\strategy_backtester.py)
+* Abstract interface class: [movingAverageTrading()](\\Lib\\abstract_MA_trading_strategy.py)
+* Concrete implmentation 1: [crossoverTrading()](\\Lib\\crossover_trading_strategy.py)
+* Concrete implementation 2: [zScoreTrading()](\\Lib\\zscore_trading_strategy.py)
+
+Example usage:
+
+crossoverTrading()
+```
+df = <pandas df containing close prices>
+symbol = <asset ticker> # must correspond to header in df
+MA_type = "SMA" # simple moving average
+MAslow = 40 # period of slow MA
+MAfast = 10 # period of fast MA
+
+strategy = crossoverTrading(df, symbol, MA_type, MAslow, fast_MA=MAfast)
+trader = backtest(strategy, plot_results=True)
+trader.trade()
+```
+
+zScoreTrading()
+```
+df = <pandas df containing close prices>
+symbol = <asset ticker> # must correspond to header in df
+MA_type = "SMA" # simple moving average
+MAslow = 40 # period of slow MA
+MAfast = 10 # period of fast MA
+Z_period = 5 # lookback period for determining z score
+bw = 2 # bandwidth for trading logic
+
+strategy = zScoreTrading(df, symbol, MA_type, MAslow, 
+                        Z_period, bw, fast_MA=MAfast)
+trader = backtest(strategy)
+trader.trade()
+```
 
 
 

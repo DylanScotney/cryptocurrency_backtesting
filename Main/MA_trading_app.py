@@ -15,17 +15,16 @@ cpath = os.path.dirname(__file__) # current path
 
 def main(): 
 
-    save_results = True
+    save_results = False
     plot_results = True
-    MA_type = 'EMA'
+    MA_type = 'SMA'
     if save_results:
-        results_outfile = cpath + "\\..\\Data\\deleteme.csv"
+        results_outfile = cpath + "\\..\\Data\\EMA_results.csv"
     symbols = [symbol.rstrip('\n') for symbol in open(cpath+"\\..\\Data\\list_of_tickers.txt")]
-    print(symbols)
 
     # Load Dataframe
     #--------------------------------------------------------------------------
-    infile = cpath + "\\..\\Data\\daily_data.csv"    
+    infile = cpath + "\\..\\Data\\cryptocompareBTC_10000_hours_df.csv"    
     loading_strat = fileLoadingDF(infile)
     loader = dataLoader(loading_strat)
     df = loader.get_data()
@@ -35,8 +34,10 @@ def main():
 
     # Define Trading Parameters
     #--------------------------------------------------------------------------
-    symbols = [key for key in df.keys() if key not in ['date']]
-    MA_list = [1, 2, 5, 8, 10, 12, 13, 14, 15, 16, 17, 18, 20, 25, 32, 40, 50, 80, 100, 160, 200]#, 240, 280, 320, 360, 400]
+    symbols = [key for key in df.keys() if key not in ['date', 'ETC', 'BCH', 'MKR']]
+    symbols = ['QTUM']
+    MA_list = [1, 10, 20, 40, 50, 80, 100, 120, 160, 200, 240, 280, 320, 360, 400]
+    MA_list = [1, 10, 400]
     if plot_results:
         returns = np.zeros((len(MA_list), len(MA_list))) # store final returns
     #--------------------------------------------------------------------------
@@ -46,14 +47,15 @@ def main():
     for symbol in symbols:
         for i in range(len(MA_list)):
             for j in range(i+1, len(MA_list)):
+                fast_MA = MA_list[i]                
                 slow_MA = MA_list[j]
-                fast_MA = MA_list[i]
+
                 print("Trading {} for {} v {}".format(symbol, slow_MA, fast_MA))
 
                 asset_df = df[['date', symbol]].reset_index()
                 strategy = crossoverTrading(asset_df, symbol, MA_type, slow_MA, 
-                                            fast_MA=fast_MA, trading_fee=0.001)
-                trader = backtest(strategy)
+                                            fast_MA=fast_MA, trading_fee=0.0)
+                trader = backtest(strategy, plot_results=True)
                 trader.trade()
 
                 if plot_results:

@@ -68,6 +68,7 @@ class crossoverTrading(movingAverageTrading):
         plt.xlabel('Hours')
         plt.show()
 
+
     def trade(self, plot=False):
         """
         Executes all trades from the earliest value that the SMA can be
