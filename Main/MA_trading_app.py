@@ -8,7 +8,7 @@ from datetime import datetime
 from ..Lib.data_loader import dataLoader
 from ..Lib.file_loading_strategies import fileLoadingDF, fileLoadingRaw
 from ..Lib.web_loading_strategies import webLoading
-from ..Lib.crossover_trading_strategy import crossoverTrader
+from ..Lib.trading_strat_crossover import crossoverTrader
 from ..Lib.strategy_backtester import backtest
 
 cpath = os.path.dirname(__file__) # current path

@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 from ..Lib.file_loading_strategies import fileLoadingDF
-from ..Lib.zscore_trading_strategy import zScoreTrader
+from ..Lib.trading_strat_zscore import zScoreTrader
 from ..Lib.strategy_backtester import backtest
 
 cpath = os.path.dirname(__file__) # current path
