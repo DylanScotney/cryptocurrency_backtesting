@@ -35,13 +35,16 @@ class Position():
 
         self._exitprice = price
 
-    def setTradeReturn(self):
+    def calcTradeReturn(self):
         """
         Calculates the round trip trade return as a fraction.
         """
 
         Exit, Entry = self.getExitPrice(), self.getEntryPrice()
-        self._tradereturn = self._pos*(Exit - Entry)/abs(Entry)
+        if (Exit - Entry) == 0:
+            self._tradereturn = abs(self._pos) - 1
+        else:
+            self._tradereturn = self._pos*(Exit - Entry)/abs(Entry)
 
     def getEntryPrice(self):
         """
@@ -84,12 +87,17 @@ class Position():
         if self._pos != 0:
             raise RuntimeError("Cannot open position."
                                + "A position is already open")
+        if not (isinstance(price, int) or isinstance(price, float)):
+            raise ValueError("Price must be float or int")
 
         self.setEntryPrice(price)
         if pos_type == 'L':
             self._pos = 1*(1-fee)
-        if pos_type == 'S':
+        elif pos_type == 'S':
             self._pos = -1*(1-fee)
+        else:
+            raise ValueError("pos_type not recognised. Use 'L' or 'S'.")
+        
 
     def close(self, price, fee=0):
         """
@@ -107,5 +115,5 @@ class Position():
 
         self.setExitPrice(price)
         self._pos *= (1 - fee)
-        self.setTradeReturn()
+        self.calcTradeReturn()
         self._pos = 0
