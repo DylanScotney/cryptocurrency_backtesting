@@ -36,11 +36,10 @@ def main():
     # Define Trading Parameters
     #--------------------------------------------------------------------------
     symbols = [key for key in df.keys() if key not in ['date', 'ETC', 'BCH', 'MKR']]
-    symbols = ['QTUM']
     MA_list = [1, 10, 20, 40, 50, 80, 100, 120, 160, 200, 240, 280, 320, 360, 400]
-    MA_list = [1, 10, 400]
     if plot_results:
         returns = np.zeros((len(MA_list), len(MA_list))) # store final returns
+        ave_return = np.zeros((len(MA_list), len(MA_list)))
     #--------------------------------------------------------------------------
     
     # Execute Trading
@@ -56,20 +55,24 @@ def main():
                 asset_df = df[['date', symbol]].reset_index()
                 strategy = crossoverTrader(asset_df, symbol, MA_type, slow_MA, 
                                            fast_MA=fast_MA, trading_fee=0.0)
-                trader = backtest(strategy, plot_results=True)
+                trader = backtest(strategy)
                 trader.trade()
 
                 if plot_results:
                     returns[j, i] += asset_df['returns'].cumsum().iloc[-1]
+                    trade_rets = [ret for ret in asset_df['returns'] if ret != 0]
+                    ave_return[j, i] += np.mean(trade_rets)
                 if save_results:
                     header = '{}_{}_{}'.format(symbol, slow_MA, fast_MA)
                     df_csv[header] = asset_df['returns']
+        
     #--------------------------------------------------------------------------
 
     # Plot Results
     #--------------------------------------------------------------------------
     num_symbols = float(len(symbols))
     returns = returns*100/num_symbols # average returns as a percentage
+    ave_return = ave_return*100/num_symbols
 
     if plot_results:
         plt.imshow(returns, cmap='RdBu')
@@ -81,6 +84,19 @@ def main():
         plt.ylabel("{} Period".format(MA_type))
         plt.xlabel("{} Period".format(MA_type))
         plt.title("Average Returns")
+        if save_results:
+            plt.savefig('Returns_{}.png'.format(MA_type))
+        plt.show()
+
+        plt.imshow(ave_return, cmap='RdBu')
+        plt.colorbar(format=FuncFormatter(fmt))        
+        max_ret = np.nanmax(abs(ave_return))
+        plt.clim(vmin=-max_ret, vmax=max_ret)
+        plt.yticks(np.arange(len(MA_list)), MA_list)
+        plt.xticks(np.arange(len(MA_list)), MA_list)
+        plt.ylabel("{} Period".format(MA_type))
+        plt.xlabel("{} Period".format(MA_type))
+        plt.title("Average Trade Return")
         if save_results:
             plt.savefig('Returns_{}.png'.format(MA_type))
         plt.show()
