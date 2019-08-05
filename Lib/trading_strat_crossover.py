@@ -63,8 +63,9 @@ class crossoverTrader(movingAverageTrader):
         plt.legend()
 
         plt.subplot(212)
-        self.df.loc[t0:T, 'returns'].cumsum().plot()
-        plt.ylabel('Returns')
+        returns = self.df.loc[t0:T, 'returns'].cumsum()*100
+        returns.plot()
+        plt.ylabel('Returns (%)')
         plt.xlabel('Hours')
         plt.show()
 

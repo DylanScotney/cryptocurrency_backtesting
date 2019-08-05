@@ -37,6 +37,8 @@ def main():
     #--------------------------------------------------------------------------
     symbols = [key for key in df.keys() if key not in ['date', 'ETC', 'BCH', 'MKR']]
     MA_list = [1, 10, 20, 40, 50, 80, 100, 120, 160, 200, 240, 280, 320, 360, 400]
+    MA_list = [1, 20]
+    symbols = ["QTUM"]
     if plot_results:
         returns = np.zeros((len(MA_list), len(MA_list))) # store final returns
         ave_return = np.zeros((len(MA_list), len(MA_list)))
@@ -55,7 +57,7 @@ def main():
                 asset_df = df[['date', symbol]].reset_index()
                 strategy = crossoverTrader(asset_df, symbol, MA_type, slow_MA, 
                                            fast_MA=fast_MA, trading_fee=0.0)
-                trader = backtest(strategy)
+                trader = backtest(strategy, plot_results=True)
                 trader.trade()
 
                 if plot_results:
@@ -75,6 +77,7 @@ def main():
     ave_return = ave_return*100/num_symbols
 
     if plot_results:
+        plt.subplot(121)
         plt.imshow(returns, cmap='RdBu')
         plt.colorbar(format=FuncFormatter(fmt))        
         max_ret = np.nanmax(abs(returns))
@@ -86,8 +89,8 @@ def main():
         plt.title("Average Returns")
         if save_results:
             plt.savefig('Returns_{}.png'.format(MA_type))
-        plt.show()
 
+        plt.subplot(122)
         plt.imshow(ave_return, cmap='RdBu')
         plt.colorbar(format=FuncFormatter(fmt))        
         max_ret = np.nanmax(abs(ave_return))
