@@ -125,14 +125,14 @@ class zScoreTrader(movingAverageTrader):
                 if Z_t > -self.bandwith and Z_t_1 < -self.bandwith:
                     spotprice = self.getSpotPrice(t)
                     self.position.open(spotprice, 'L', fee=self.trading_fee)
-                    if plot:
+                    if plot and self.position.getTradeReturn() != 0:
                         opentimes.append(t)
 
             if not uptrend and self.position.getPosition() == 0:
                 if Z_t < self.bandwith and Z_t_1 > self.bandwith:
                     spotprice = self.getSpotPrice(t)
                     self.position.open(spotprice, 'S', fee=self.trading_fee)
-                    if plot:
+                    if plot and self.position.getTradeReturn() != 0:
                         opentimes.append(t)
             # -----------------------------------------------------------------
 
@@ -142,14 +142,30 @@ class zScoreTrader(movingAverageTrader):
                 spotprice = self.getSpotPrice(t)
                 self.position.close(spotprice, fee=self.trading_fee)
                 self.storeTradeReturns(t)
-                if plot:
+                if plot and self.position.getTradeReturn() != 0:
                     closetimes.append(t)
 
             if self.position.getPosition() == -1 and Z_t < 0 and Z_t_1 > 0:
                 spotprice = self.getSpotPrice(t)
                 self.position.close(spotprice, fee=self.trading_fee)
                 self.storeTradeReturns(t)
-                if plot:
+                if plot and self.position.getTradeReturn() != 0:
+                    closetimes.append(t)
+
+            if self.position.getPosition() == -1 and uptrend:
+                # close if short open and trend changes to bullish
+                spotprice = self.getSpotPrice(t)
+                self.position.close(spotprice, fee=self.trading_fee)
+                self.storeTradeReturns(t)
+                if plot and self.position.getTradeReturn() != 0:
+                    closetimes.append(t)
+
+            if self.position.getPosition() == 1 and not uptrend:
+            # close if long open and trend changes bearish
+                spotprice = self.getSpotPrice(t)
+                self.position.close(spotprice, fee=self.trading_fee)
+                self.storeTradeReturns(t)
+                if plot and self.position.getTradeReturn() != 0:
                     closetimes.append(t)
             # -----------------------------------------------------------------
 
