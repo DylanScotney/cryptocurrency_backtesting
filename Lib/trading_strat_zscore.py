@@ -82,7 +82,7 @@ class zScoreTrader(movingAverageTrader):
         plt.legend()
 
         plt.subplot(312)
-        self.zscore.getArray().plot()
+        self.zscore.getArray().loc[t0:T].plot()
         plt.plot([t0, T], [bw, bw], c='k', ls='--', lw=0.5)
         plt.plot([t0, T], [-bw, -bw], c='k', ls='--', lw=0.5)
         plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)
@@ -148,6 +148,7 @@ class zScoreTrader(movingAverageTrader):
             if self.position.getPosition() == -1 and Z_t < 0 and Z_t_1 > 0:
                 spotprice = self.getSpotPrice(t)
                 self.position.close(spotprice, fee=self.trading_fee)
+                self.storeTradeReturns(t)
                 if plot:
                     closetimes.append(t)
             # -----------------------------------------------------------------
