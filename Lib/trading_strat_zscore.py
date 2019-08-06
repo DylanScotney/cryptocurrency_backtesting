@@ -74,6 +74,7 @@ class zScoreTrader(movingAverageTrader):
         plt.subplot(311)
         self.df.loc[t0:T, self.sym].plot(label=self.sym)
         self.slowMA.getArray().loc[t0:T].plot(label=self.slowMA.name)
+        zscore_MA.loc[t0:T].plot(label=self.zscore.name)
         if self.fastMA.getPeriod() > 1:
             self.fastMA.getArray().loc[t0:T].plot(label=self.fastMA.name)
         plt.ylabel('{}/BTC'.format(self.sym))
@@ -91,8 +92,9 @@ class zScoreTrader(movingAverageTrader):
         plt.ylabel('Z Score')
 
         plt.subplot(313)
-        self.df.loc[t0:T, 'returns'].cumsum().plot()
-        plt.ylabel('Returns')
+        returns = self.df.loc[t0:T, 'returns'].cumsum()*100
+        returns.plot()
+        plt.ylabel('Returns (%)')
         plt.xlabel('Hours')
         plt.show()
 
