@@ -19,7 +19,6 @@ class dataHandler():
 
     def __init__(self, series):
         self.price_series = series
-        print(type(self.price_series))
         self.data = {}
 
     def addMovingAverage(self, name, period, Type="SMA"):
