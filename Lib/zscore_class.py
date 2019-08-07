@@ -18,9 +18,12 @@ class zScore():
 
         self._period = period
         self.name = '{} Zscr'.format(period)
-        mean = series.rolling(window=period).mean()
-        std = series.rolling(window=period).std()
-        self._zScore = (series - mean)/std
+        self._zScore = self.generateZScore(series)
+
+    def generateZScore(self, series):
+        mean = series.rolling(window=self._period).mean()
+        std = series.rolling(window=self._period).std()
+        return (series - mean)/std
 
     def getValue(self, t):
         """
