@@ -40,11 +40,12 @@ class pairsTrader():
                                 ratio, zscore etc. 
     """
 
-    def __init__(self, x, y, asset1, asset2, bandwidth=2.0, fee=0.0):
-        self.name = asset2 + "/" + asset1        
+    def __init__(self, x, y, asset1, asset2, zperiod, bandwidth=2.0, fee=0.0):
+        self.name = asset1 + "/" + asset2        
         self.xsym, self.ysym = asset1, asset2
         self.position = Position()
         self.bw = bandwidth
+        self.zperiod = zperiod
         self.trading_fee = fee
         self.opentimes = []
         self.closetimes = []
@@ -56,8 +57,8 @@ class pairsTrader():
         self.df['returns'] = 0.0
 
         # Use of a moving average to smooth spread
-        self.df['xMA'] = expMovingAverage(x, 20).getArray()  
-        self.df['yMA'] = expMovingAverage(y, 20).getArray()
+        self.df['xMA'] = expMovingAverage(x, 80).getArray()  
+        self.df['yMA'] = expMovingAverage(y, 80).getArray()
 
     def getSpreadValue(self, t):
         """
@@ -191,14 +192,14 @@ class pairsTrader():
         - plot:                (bool) bool to plot trading.
         """
         
-        zPeriod = 8
-        t0, T = zPeriod, 1000#self.df.shape[0]-1
+        
+        t0, T = self.zperiod, 10#self.df.shape[0]-1
         position_t = 0
 
         for t in range(t0, T):
             
             self._generateSpread(t0=t, T=t+1)
-            self._generateZScore(t0=t, T=t+1, period=zPeriod)
+            self._generateZScore(t0=t, T=t+1, period=self.zperiod)
 
             z_t, z_t_1 = self.getZScore(t), self.getZScore(t-1) 
             spotprice = self.getSpreadValue(t)       
@@ -207,15 +208,13 @@ class pairsTrader():
             # Open logic
             #------------------------------------------------------------------
             if (position_t == 0) and spotprice > 1e-6:
-                if (z_t > - self.bw) and (z_t_1 < -self.bw) and (z_t < 0):                    
-                    print("Open long: {}".format(t))
+                if (z_t > - self.bw) and (z_t_1 < -self.bw) and (z_t < 0):   
                     # Open Long
                     self.position.open(spotprice, 'L', fee=self.trading_fee)
                     self.opentimes.append(t)
                 
                 if (z_t < self.bw) and (z_t_1 > self.bw) and (z_t > 0):
                     # Open short
-                    print("Open short: {}".format(t))
                     self.position.open(spotprice, 'S', fee=self.trading_fee)
                     self.opentimes.append(t)
             #------------------------------------------------------------------
@@ -224,14 +223,12 @@ class pairsTrader():
             #------------------------------------------------------------------
             if (position_t == 1):
                 if (z_t >= 0) and (z_t_1 < 0):
-                    print("close long: {}".format(t))
                     self.position.close(spotprice, fee=self.trading_fee)
                     self._storeTradeReturns(t)
                     self.closetimes.append(t)
             
             if (position_t == -1):
-                if (z_t <= 0) and (z_t_1  > 0): 
-                    print("close short: {}".format(t))                   
+                if (z_t <= 0) and (z_t_1  > 0):                   
                     self.position.close(spotprice, fee=self.trading_fee)
                     self._storeTradeReturns(t)
                     self.closetimes.append(t)
@@ -269,7 +266,7 @@ class pairsTrader():
 
         plt.subplot(411)
         self.df.loc[t0:T, 'spread'].plot()
-        expMovingAverage(self.df.loc[t0:T, 'spread'], 8).getArray().plot()
+        expMovingAverage(self.df.loc[t0:T, 'spread'], self.zperiod).getArray().plot()
         plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)
         plt.ylabel(self.name)
         [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
@@ -298,11 +295,3 @@ class pairsTrader():
         plt.ylabel('Returns (%)')
         plt.xlabel('Hours')
         plt.show()
-
-
-        
-            
-
-
-
-        

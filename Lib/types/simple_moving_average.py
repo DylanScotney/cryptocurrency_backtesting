@@ -3,7 +3,7 @@ import pandas as pd
 class simpleMovingAverage():
 
     """
-    Class that handles the simple moving average of a timeseries
+    Class that handles the simple moving average of a timeseries. 
 
     Initialisation:
     - series:               pandas series
