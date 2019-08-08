@@ -3,8 +3,7 @@ import numpy as np
 
 from ..Lib.data_loading.file_loading_strategies import fileLoadingDF
 from ..Lib.data_loading.data_loader import dataLoader
-from ..Lib.spread_class import pairsSpread
-from ..Lib.trading_strat_pairs import pairsTrader
+from ..Lib.strategies.trading_strat_pairs import pairsTrader
 
 cpath = os.path.dirname(__file__)  # current path
 

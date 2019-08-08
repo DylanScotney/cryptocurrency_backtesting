@@ -3,10 +3,9 @@ import pandas as pd
 import numpy as np
 from pykalman import KalmanFilter
 
-from ..Lib.spread_class import pairsSpread
-from ..Lib.zscore_class import zScore
-from ..Lib.position_class import Position
-from ..Lib.exponential_moving_average_class import expMovingAverage
+from ..zscore_class import zScore
+from ..position_class import Position
+from ..exponential_moving_average_class import expMovingAverage
 
 class pairsTrader():
 

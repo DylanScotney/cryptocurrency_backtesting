@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 from ..Lib.data_loading.file_loading_strategies import fileLoadingDF
-from ..Lib.trading_strat_zscore import zScoreTrader
+from ..Lib.strategies. trading_strat_zscore import zScoreTrader
 from ..Lib.strategy_backtester import backtest
 
 cpath = os.path.dirname(__file__) # current path
@@ -95,9 +95,6 @@ def main():
             num_symbols = len(symbols)
             returns = returns*100/num_symbols # average percentage rets
             ave_returns = ave_returns*100/num_symbols
-            print(returns)
-            print(ave_returns)
-            print(num_trades)
             plt.subplot(121)
             plt.imshow(returns, cmap='RdBu')
             plt.colorbar(format=FuncFormatter(fmt1))
