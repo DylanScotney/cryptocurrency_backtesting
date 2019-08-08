@@ -16,12 +16,12 @@ def main():
     loader = dataLoader(loading_strat)
     df = loader.get_data()
     #--------------------------------------------------------------------------
-    XRP = df.loc[:, 'XRP']
-    XLM = df.loc[:, 'XLM']
+    XMR = df.loc[:, 'XMR']
+    XEM = df.loc[:, 'XEM']
     #spread = pairsSpread(XRP, XLM, 'XRP', 'XLM')
     #spread.generateSpread(t0=100, T=102,plot=True)
 
-    trader = pairsTrader(XRP, XLM, 'XRP', 'XLM')
+    trader = pairsTrader(XMR, XEM, 'XMR', 'XEM')
     trader.trade(plot=True)
 
 

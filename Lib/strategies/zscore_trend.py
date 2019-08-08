@@ -2,8 +2,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 from .abstract_MA import movingAverageTrader
-from ..zscore_class import zScore
-
+from ..types.zscore import zScore
 
 class zScoreTrader(movingAverageTrader):
     """

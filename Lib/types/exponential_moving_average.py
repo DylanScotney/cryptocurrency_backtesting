@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .simple_moving_average_class import simpleMovingAverage
+from .simple_moving_average import simpleMovingAverage
 
 class expMovingAverage(simpleMovingAverage):
     """

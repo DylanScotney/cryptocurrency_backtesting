@@ -2,9 +2,9 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import abc
 
-from ..position_class import Position
-from ..simple_moving_average_class import simpleMovingAverage
-from ..exponential_moving_average_class import expMovingAverage
+from ..types.position import Position
+from ..types.simple_moving_average import simpleMovingAverage
+from ..types.exponential_moving_average import expMovingAverage
 
 
 class movingAverageTrader(metaclass=abc.ABCMeta):
