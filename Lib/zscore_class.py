@@ -10,6 +10,7 @@ class zScore():
     - _zscore:              (pandas series) stores zscore of series
     - name:                 name of object - can be used for plot labels
     """
+    
     def __init__(self, series, period):
         if not isinstance(period, int) or period < 1:
             raise ValueError("Period must be a positive int")

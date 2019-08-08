@@ -153,22 +153,6 @@ class zScoreTrader(movingAverageTrader):
                 self.storeTradeReturns(t)
                 if plot and self.position.getTradeReturn() != 0:
                     closetimes.append(t)
-
-            if self.position.getPosition() == -1 and uptrend:
-                # close if short open and trend changes to bullish
-                spotprice = self.getSpotPrice(t)
-                self.position.close(spotprice, fee=self.trading_fee)
-                self.storeTradeReturns(t)
-                if plot and self.position.getTradeReturn() != 0:
-                    closetimes.append(t)
-
-            if self.position.getPosition() == 1 and not uptrend:
-            # close if long open and trend changes bearish
-                spotprice = self.getSpotPrice(t)
-                self.position.close(spotprice, fee=self.trading_fee)
-                self.storeTradeReturns(t)
-                if plot and self.position.getTradeReturn() != 0:
-                    closetimes.append(t)
             # -----------------------------------------------------------------
 
         if plot:

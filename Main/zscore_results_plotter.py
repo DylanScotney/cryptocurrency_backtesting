@@ -10,12 +10,11 @@ def fmt(x, pos):
     """
     Function for formatting colorbar plot
     """
-    return '{}%'.format(np.round(x*100, 0))
+    return '{}%'.format(np.round(x, 1))
 
 def main():
 
-    bandwidth = 3.0
-    plot_trade_distributions = False
+    bandwidth = 2.5
 
     # Load data
     df = pd.read_csv(cpath+"\\..\\Data\\ZScore_Results\\bandwidth_{}.csv".format(bandwidth))
@@ -26,70 +25,50 @@ def main():
     expected_trade_returns = np.zeros((12,13))
     cumReturns_df = df[['date']]
     trade_rets1 = []
-    trade_rets2 = []
-    trade_rets3 = []
-    keys = [key for key in df.keys() if key not in ['date', 'Unnamed: 0']]
+    keys = [key for key in df.keys() if key not in ['date', 'Unnamed: 0', 'ETC', 'BCH', 'MKR']]
     SMAs = [5, 8, 10, 15, 20, 30, 40, 50, 80, 100, 200, 400]
     Zscores = [5, 6, 7, 8, 10, 12, 14, 15, 20, 30, 50, 80, 100]
     #--------------------------------------------------------------------------
-    for ma in SMAs:
-        for score in Zscores:
-            cumReturns_df['{}SMA_{}Z'.format(ma, score)] = 0.0
-    cumReturns_keys = [key for key in cumReturns_df.keys() if key not in ['date']]
-
+    numtrades = 0
+    numtrades_best = 0
     count = 0
+
     while(count < len(keys)):
         print(keys[count])
-        count2 = 0
-        for i in range(12):
-            for j in range(13):
+        for i in range(len(SMAs)):
+            for j in range(len(Zscores)):
                 
                 # Compute total returns
                 #--------------------------------------------------------------
                 total_returns[i, j] += df[keys[count]].cumsum().iloc[-1]
-                cumReturns_df[cumReturns_keys[count2]] += df[keys[count]].cumsum()*100
                 #--------------------------------------------------------------
 
                 # Compute expected returns
                 #--------------------------------------------------------------
-                temp_exp_rets = []
-                for ret in df[keys[count]]:
-                    if ret != 0:
-                        temp_exp_rets.append(ret*100)
+                temp_exp_rets = [ret for ret in df[keys[count]] if ret != 0]
+                numtrades += len(temp_exp_rets)
+                if i == SMAs.index(400) and j == Zscores.index(10):
+                    numtrades_best += len(temp_exp_rets)
+                    for ret in df[keys[count]]:
+                        if ret!=0:
+                            trade_rets1.append(ret*100)
                 if temp_exp_rets:
                     expected_trade_returns[i, j] += np.mean(temp_exp_rets)
-                else:
-                    expected_trade_returns[i, j] = 0
+                else: 
+                    expected_trade_returns[i, j] += 0
                 #--------------------------------------------------------------
 
-                if plot_trade_distributions:
-                    if i == 11 and j == 6:
-                        for ret in df[keys[count]]:
-                            if ret != 0:
-                                trade_rets1.append(ret*100)
-                    if i == 9 and j == 8:
-                        for ret in df[keys[count]]:
-                            if ret != 0:
-                                trade_rets2.append(ret*100)
-                    if i == 11 and j == 9:
-                        for ret in df[keys[count]]:
-                            if ret != 0:
-                                trade_rets3.append(ret*100)
-
                 count += 1 # count total iters for key location
-                count2 += 1
         
+    
+    total_returns = total_returns*100/20.0 # 23 assets so get average
+    expected_trade_returns = expected_trade_returns*100/20.0
+    print("Number of trades: {}".format(numtrades))
+    print("Best performer returns: {}".format(total_returns[SMAs.index(200), Zscores.index(15)]))
+    print("Best performer ave return: {}".format(expected_trade_returns[SMAs.index(200), Zscores.index(15)]))
+    print("Best performer ave trades: {}".format(numtrades_best/20))
 
-    total_returns = total_returns/23.0 # 23 assets so get average
-    expected_trade_returns = expected_trade_returns/23.0
-    cumReturns_df = cumReturns_df.drop(columns=['date'])
-    cumReturns_df = cumReturns_df/23.0
-    print(len(cumReturns_df.keys()))
-    cumReturns_df.plot(legend=False)
-    plt.ylabel("Returns (%)")
-    plt.xlabel("Hours")
-    plt.show()
-
+    plt.subplot(121)
     plt.imshow(total_returns, cmap='RdBu')
     plt.colorbar(format = FuncFormatter(fmt))
     max_ret = np.amax(np.fabs(total_returns))
@@ -99,8 +78,8 @@ def main():
     plt.title("Average Returns Bandwidth = {}".format(bandwidth))
     plt.xlabel("Z Score Period")
     plt.ylabel("SMA Period")
-    plt.show()
 
+    plt.subplot(122)
     plt.imshow(expected_trade_returns, cmap='RdBu')
     plt.colorbar(format = FuncFormatter(fmt))
     max_ret = np.amax(np.fabs(expected_trade_returns))
@@ -111,26 +90,12 @@ def main():
     plt.xlabel("Z Score Period")
     plt.ylabel("SMA Period")
     plt.show()
-
-    if plot_trade_distributions:
-        plt.subplot(311)
-        weights = np.ones_like(trade_rets1)/float(len(trade_rets1))
-        plt.hist(trade_rets1, weights=weights, bins=100, label='400v14', range=[-15, 15])
-        plt.legend()
-
-        plt.subplot(312)
-        weights = np.ones_like(trade_rets2)/float(len(trade_rets2))
-        plt.hist(trade_rets2, weights=weights, bins=100, label='100v20', range=[-15,15])
-        plt.ylabel("Probability")
-        plt.legend()
-
-        plt.subplot(313)
-        weights = np.ones_like(trade_rets3)/float(len(trade_rets3))
-        plt.hist(trade_rets3, weights=weights, bins=100, label='400v30', range=[-20,20])
-        plt.xlabel("Trade Returns (%)")
-        plt.legend()
-
-        plt.show()
+    
+    weights = np.ones_like(trade_rets1)/float(len(trade_rets1))
+    plt.hist(trade_rets1, weights=weights, bins=100, range = [-20, 20])
+    plt.ylabel("Probability")
+    plt.xlabel("Return (%)")
+    plt.show()
 
 
 if __name__ == "__main__":
