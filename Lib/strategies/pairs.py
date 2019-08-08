@@ -113,10 +113,11 @@ class pairsTrader():
         y*=10000000
         
         delta = 1e-5
-        trans_cov = delta / (1 - delta) * np.eye(2) # How much random walk wiggles
+        trans_cov = delta / (1 - delta) * np.eye(2) # How much rand walk moves
         obs_mat = np.expand_dims(np.vstack([[x], [np.ones_like(x)]]).T, axis=1)
 
-        kf = KalmanFilter(n_dim_obs=1, n_dim_state=2, # y is 1-dimensional, (alpha, beta) is 2-dimensional
+        # y is 1-dimensional, (alpha, beta) is 2-dimensional
+        kf = KalmanFilter(n_dim_obs=1, n_dim_state=2, 
                           initial_state_mean=[0,0],
                           initial_state_covariance=np.ones((2, 2)),
                           transition_matrices=np.eye(2),
@@ -159,6 +160,7 @@ class pairsTrader():
             xMA, yMA = self.df.loc[t0:T, 'xMA'], self.df.loc[t0:T, 'yMA']
             self.df.loc[t0:T, 'HR'] = self._kf_linear_regression(xMA, yMA)
         
+        # spread = y - HR*x
         self.df.loc[t0:T, 'spread'] = (self.df.loc[t0:T, self.ysym] 
                                        - self.df.loc[t0:T, self.xsym]
                                        * self.df.loc[t0:T, 'HR'])
@@ -166,15 +168,27 @@ class pairsTrader():
             self.plotSpread(t0=t0, T=T)
 
     def _generateZScore(self, period, t0=None, T=None):
+        """
+        Generates zscore of a given period between t0 and T. 
+
+        Note: t0 > period as need atleast period points as a lookback 
+        window. 
+        """
         if(t0 is None):
             t0 = period
         if(T is None):
             T = self.df.shape[0]
-        zscr = zScore(self.df.loc[t0-period:T-1, 'spread'], period).getArray()
 
+        zscr = zScore(self.df.loc[t0-period:T-1, 'spread'], period).getArray()
         self.df.loc[t0:T, 'zscore'] = zscr.loc[t0:T-1]
     
     def trade(self, plot=False):
+        """
+        Executes all trades for the pairs trading strategy. 
+
+        Inputs:
+        - plot:                (bool) bool to plot trading.
+        """
         
         zPeriod = 8
         t0, T = zPeriod, 1000#self.df.shape[0]-1
@@ -225,9 +239,10 @@ class pairsTrader():
         if (plot):
             self.plotTrading(t0=t0, T=T)
         
-    def plotSpread(self, t0=None, T=None):
-        if t0==None:
-            t0=0
+    def plotSpread(self, t0=0, T=None):
+        """
+        Plots spread an associated hedge ratio
+        """
         if T==None:
             T=self.df.shape[0]
 
@@ -243,9 +258,11 @@ class pairsTrader():
         plt.xlabel("Time (hours)")
         plt.show()
 
-    def plotTrading(self,t0=None, T=None):        
-        if t0==None:
-            t0=0
+    def plotTrading(self,t0=0, T=None):
+        """
+        Plots all executed trades
+        """       
+        
         if T==None:
             T=self.df.shape[0]
 
