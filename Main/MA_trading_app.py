@@ -9,7 +9,7 @@ from ..Lib.data_loading.data_loader import dataLoader
 from ..Lib.data_loading.file_loading_strategies import fileLoadingDF
 from ..Lib.data_loading.file_loading_strategies import fileLoadingRaw
 from ..Lib.data_loading.web_loading_strategies import webLoading
-from ..Lib.strategies.trading_strat_crossover import crossoverTrader
+from ..Lib.strategies.crossover import crossoverTrader
 from ..Lib.strategy_backtester import backtest
 
 cpath = os.path.dirname(__file__) # current path
