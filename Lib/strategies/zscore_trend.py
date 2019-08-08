@@ -47,8 +47,10 @@ class zScoreTrader(movingAverageTrader):
 
         self.zscore = zScore(df[self.sym], zscore_period)
         self.bandwith = bandwidth
+        self.opentimes = []
+        self.closetimes = []
 
-    def plotTrading(self, opentimes, closetimes):
+    def plotTrading(self):
         """
         Plots the executed trading.
         3x1 subplots:
@@ -78,8 +80,8 @@ class zScoreTrader(movingAverageTrader):
         if self.fastMA.getPeriod() > 1:
             self.fastMA.getArray().loc[t0:T].plot(label=self.fastMA.name)
         plt.ylabel('{}/BTC'.format(self.sym))
-        [plt.axvline(x, c='g', lw=0.5, ls='--') for x in opentimes]
-        [plt.axvline(x, c='r', lw=0.5, ls='--') for x in closetimes]
+        [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
+        [plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
         plt.legend()
 
         plt.subplot(312)
@@ -87,8 +89,8 @@ class zScoreTrader(movingAverageTrader):
         plt.plot([t0, T], [bw, bw], c='k', ls='--', lw=0.5)
         plt.plot([t0, T], [-bw, -bw], c='k', ls='--', lw=0.5)
         plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)
-        [plt.axvline(x, c='g', lw=0.5, ls='--') for x in opentimes]
-        [plt.axvline(x, c='r', lw=0.5, ls='--') for x in closetimes]
+        [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
+        [plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
         plt.ylabel('Z Score')
 
         plt.subplot(313)
@@ -107,8 +109,8 @@ class zScoreTrader(movingAverageTrader):
         - plot:             (bool) optional arg to plot trading results
         """
 
-        opentimes = []
-        closetimes = []
+        self.opentimes = []
+        self.closetimes = []
 
         for t in range(self.slowMA.getPeriod(), self.df.shape[0]):
             slowMA_t = self.slowMA.getValue(t)
@@ -125,35 +127,35 @@ class zScoreTrader(movingAverageTrader):
             # -----------------------------------------------------------------
             if uptrend and self.position.getPosition() == 0:
                 if Z_t > -self.bandwith and Z_t_1 < -self.bandwith:
+                    # Open long
                     spotprice = self.getSpotPrice(t)
                     self.position.open(spotprice, 'L', fee=self.trading_fee)
-                    if plot and self.position.getTradeReturn() != 0:
-                        opentimes.append(t)
+                    self.opentimes.append(t)
 
             if not uptrend and self.position.getPosition() == 0:
                 if Z_t < self.bandwith and Z_t_1 > self.bandwith:
+                    # Open Short
                     spotprice = self.getSpotPrice(t)
                     self.position.open(spotprice, 'S', fee=self.trading_fee)
-                    if plot and self.position.getTradeReturn() != 0:
-                        opentimes.append(t)
+                    self.opentimes.append(t)
             # -----------------------------------------------------------------
 
             # Close position logic
             # -----------------------------------------------------------------
             if self.position.getPosition() == 1 and Z_t > 0 and Z_t_1 < 0:
+                # Close long
                 spotprice = self.getSpotPrice(t)
                 self.position.close(spotprice, fee=self.trading_fee)
                 self.storeTradeReturns(t)
-                if plot and self.position.getTradeReturn() != 0:
-                    closetimes.append(t)
+                self.closetimes.append(t)
 
             if self.position.getPosition() == -1 and Z_t < 0 and Z_t_1 > 0:
+                # Close short
                 spotprice = self.getSpotPrice(t)
                 self.position.close(spotprice, fee=self.trading_fee)
                 self.storeTradeReturns(t)
-                if plot and self.position.getTradeReturn() != 0:
-                    closetimes.append(t)
+                self.closetimes.append(t)
             # -----------------------------------------------------------------
 
         if plot:
-            self.plotTrading(opentimes, closetimes)
+            self.plotTrading()
