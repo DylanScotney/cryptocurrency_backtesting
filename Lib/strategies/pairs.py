@@ -8,8 +8,38 @@ from ..position_class import Position
 from ..exponential_moving_average_class import expMovingAverage
 
 class pairsTrader():
+    """
+    A class that backtests a mean-reverting strategy on a stationary 
+    spread.
+    
+    Different data is stored in a pandas dataframe.
 
-    def __init__(self, x, y, asset1, asset2, bandwidth=2, fee=0.0):
+    Generates a stationary spread between two assets and then
+    calculates a zscore of a given period to determine when series will
+    revert to mean. 
+
+    Initialisation:
+    - x, y:                     (list, floats) price series of two
+                                cointegrated assets
+    - asset1, asset2:           (str) labels for each price series x, y
+    - bandwidth:                (float) bandwidth for zscore logic
+    - fee:                      (float) fractional trading fee
+
+    Construction:
+    - self.name:                (str) name of the spread, used for plots
+    - self.xsym, ysym:          (str) name of each series x,y
+    - self.position:            (Position) custom position object for 
+                                handling trade positions.
+    - self.trading_fee:         (float) fractional trading fee
+    - self.opentimes,
+          .closetimes:          (list, int) stores indicies of trade
+                                execution times.
+    - self.df:                  (pandas Dataframe) stores data for 
+                                trading including spread vals, hedge
+                                ratio, zscore etc. 
+    """
+
+    def __init__(self, x, y, asset1, asset2, bandwidth=2.0, fee=0.0):
         self.name = asset2 + "/" + asset1        
         self.xsym, self.ysym = asset1, asset2
         self.position = Position()
@@ -21,26 +51,40 @@ class pairsTrader():
         self.df = pd.DataFrame({asset1: x, asset2: y})
         self.df['spread'] = 0.0
         self.df['zscore'] = 0.0
-        self.df['HR'] = 0.0
+        self.df['HR'] = 0.0  # Hedge ratio
         self.df['returns'] = 0.0
-        self.df['xMA'] = expMovingAverage(x, 20).getArray() 
+
+        # Use of a moving average to smooth spread
+        self.df['xMA'] = expMovingAverage(x, 20).getArray()  
         self.df['yMA'] = expMovingAverage(y, 20).getArray()
 
     def getSpreadValue(self, t):
+        """
+        Gets the value of the spread at index t
+        """
         return self.df.loc[t, 'spread']
 
     def getHedgeRatio(self, t):
+        """
+        Gets the value of the hedge ratio at index t
+        """
         return self.df.loc[t, 'HR']
 
     def getZScore(self, t):
+        """
+        Gets the value of the z score at index t
+        """
         return self.df.loc[t, 'zscore']
 
     def storeTradeReturns(self, t):
+        """
+        stores trade returns from closing a position in index t
+        """
         self.df.loc[t, 'returns'] = self.position.getTradeReturn()
 
     def _kf_linear_regression(self, x, y, plot=True):
         """
-        Uses Kalman Filter to compute linear regression of everypoint of
+        Uses KalmanFilter to compute linear regression of everypoint of
         a (x, y) dataset.  
 
         Looking to find params beta, alpha such that:
@@ -48,8 +92,12 @@ class pairsTrader():
         for each point x_i, y_i.
 
         Inputs:
-        x, y:           x,y are a pandas values dataframe containing a list 
-                        of asset price history. 
+        x, y:                       (pandas Series) containing asset 
+                                    price history. 
+
+        Outputs:
+        - state_means[:,0]          (list, floats) list of hedge ratios,
+                                    beta.
 
 
         Brief background of params:
@@ -78,30 +126,44 @@ class pairsTrader():
 
         # Use the observations y to get running estimates and errors for the state parameters
         state_means, state_cov = kf.filter(y)
+
         return state_means[:, 0]
 
-    def _generateSpread(self, t0=None, T=None, hold_hedge_ratio=False, plot=False):
+    def _generateSpread(self, t0=0, T=None, plot=False):
+        """
+        Generates spread y - beta*x where y, x are asset series, beta 
+        is the hedge ratio. Keeps hedge ratio constant if a position is 
+        open.
+
+        Inputs: 
+        - t0:                   (int) starting index to generate spread
+        - T:                    (int) final index to generate spread
+        """
         
-        if(t0 is None):
-            t0 = 0
         if(T is None):
-            T = self.df.shape[0]
+            T = self.df.shape[0]       
         
-        if(not hold_hedge_ratio):
-            xMA, yMA = self.df.loc[t0:T, 'xMA'], self.df.loc[t0:T, 'yMA']
-            self.df.loc[t0:T, 'HR'] = self._kf_linear_regression(xMA, yMA)
+        if self.position.getPosition() == 0:
+            hold_hedge_ratio = False
         else:
+            hold_hedge_ratio = True        
+        
+        if hold_hedge_ratio:            
+            # Keep HR const, carry previous value forward.
             t = t0
             while(t <= T):
-                # Keep HR const, carry previous value forward.
                 self.df.loc[t, 'HR'] = self.df.loc[t-1, 'HR']
                 t+=1
+        else:
+            # Generate hedge ratio using kalman filter
+            xMA, yMA = self.df.loc[t0:T, 'xMA'], self.df.loc[t0:T, 'yMA']
+            self.df.loc[t0:T, 'HR'] = self._kf_linear_regression(xMA, yMA)
         
         self.df.loc[t0:T, 'spread'] = (self.df.loc[t0:T, self.ysym] 
                                        - self.df.loc[t0:T, self.xsym]
                                        * self.df.loc[t0:T, 'HR'])
         if(plot):
-            self.plotSpread()
+            self.plotSpread(t0=t0, T=T)
 
     def _generateZScore(self, period, t0=None, T=None):
         if(t0 is None):
@@ -114,15 +176,13 @@ class pairsTrader():
     
     def trade(self, plot=False):
         
-        zPeriod = 20
-        t0, T = zPeriod, self.df.shape[0]-1
+        zPeriod = 8
+        t0, T = zPeriod, 1000#self.df.shape[0]-1
         position_t = 0
 
         for t in range(t0, T):
-            if position_t == 0:
-                self._generateSpread(t0=t, T=t+1)
-            else:
-                self._generateSpread(t0=t, T=t+1, hold_hedge_ratio=True)
+            
+            self._generateSpread(t0=t, T=t+1)
             self._generateZScore(t0=t, T=t+1, period=zPeriod)
 
             z_t, z_t_1 = self.getZScore(t), self.getZScore(t-1) 
@@ -131,7 +191,7 @@ class pairsTrader():
 
             # Open logic
             #------------------------------------------------------------------
-            if (position_t == 0):
+            if (position_t == 0) and spotprice > 1e-6:
                 if (z_t > - self.bw) and (z_t_1 < -self.bw) and (z_t < 0):                    
                     print("Open long: {}".format(t))
                     # Open Long
@@ -163,7 +223,7 @@ class pairsTrader():
             #------------------------------------------------------------------
         
         if (plot):
-            self.plotTrading(t0=t0)
+            self.plotTrading(t0=t0, T=T)
         
     def plotSpread(self, t0=None, T=None):
         if t0==None:
@@ -191,6 +251,8 @@ class pairsTrader():
 
         plt.subplot(411)
         self.df.loc[t0:T, 'spread'].plot()
+        expMovingAverage(self.df.loc[t0:T, 'spread'], 8).getArray().plot()
+        plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)
         plt.ylabel(self.name)
         [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
         [plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
