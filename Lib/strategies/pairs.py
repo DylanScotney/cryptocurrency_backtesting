@@ -25,7 +25,7 @@ class pairsTrader():
     - bandwidth:                (float) bandwidth for zscore logic
     - fee:                      (float) fractional trading fee
 
-    Construction:
+    Members:
     - self.name:                (str) name of the spread, used for plots
     - self.xsym, ysym:          (str) name of each series x,y
     - self.position:            (Position) custom position object for 
@@ -76,7 +76,7 @@ class pairsTrader():
         """
         return self.df.loc[t, 'zscore']
 
-    def storeTradeReturns(self, t):
+    def _storeTradeReturns(self, t):
         """
         stores trade returns from closing a position in index t
         """
@@ -225,14 +225,14 @@ class pairsTrader():
                 if (z_t >= 0) and (z_t_1 < 0):
                     print("close long: {}".format(t))
                     self.position.close(spotprice, fee=self.trading_fee)
-                    self.storeTradeReturns(t)
+                    self._storeTradeReturns(t)
                     self.closetimes.append(t)
             
             if (position_t == -1):
                 if (z_t <= 0) and (z_t_1  > 0): 
                     print("close short: {}".format(t))                   
                     self.position.close(spotprice, fee=self.trading_fee)
-                    self.storeTradeReturns(t)
+                    self._storeTradeReturns(t)
                     self.closetimes.append(t)
             #------------------------------------------------------------------
         

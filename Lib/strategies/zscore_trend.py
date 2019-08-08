@@ -50,56 +50,6 @@ class zScoreTrader(movingAverageTrader):
         self.opentimes = []
         self.closetimes = []
 
-    def plotTrading(self):
-        """
-        Plots the executed trading.
-        3x1 subplots:
-        subplot 1:          asset price w/ longer MA to dictate trend
-                            and shorter MA to determine moves via zscore
-        subplot 2:          Z score with specified bandwidths
-        subplot 3:          Cumulative returns
-
-        Notes:
-        - All three plots have green and red verticle lines indicating
-        opening and closing positions
-        - Will only open longs in uptrend (spotprice > longer MA)
-        and only enter shorts in downtrend (spotprice < longer MA)
-        """
-
-        bw = self.bandwith
-        t0 = self.slowMA.getPeriod()
-        T = self.df.shape[0]
-        zscore_MA = (self.df[self.sym]
-                     .rolling(window=self.zscore.getPeriod())
-                     .mean())
-
-        plt.subplot(311)
-        self.df.loc[t0:T, self.sym].plot(label=self.sym)
-        self.slowMA.getArray().loc[t0:T].plot(label=self.slowMA.name)
-        zscore_MA.loc[t0:T].plot(label=self.zscore.name)
-        if self.fastMA.getPeriod() > 1:
-            self.fastMA.getArray().loc[t0:T].plot(label=self.fastMA.name)
-        plt.ylabel('{}/BTC'.format(self.sym))
-        [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
-        [plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
-        plt.legend()
-
-        plt.subplot(312)
-        self.zscore.getArray().loc[t0:T].plot()
-        plt.plot([t0, T], [bw, bw], c='k', ls='--', lw=0.5)
-        plt.plot([t0, T], [-bw, -bw], c='k', ls='--', lw=0.5)
-        plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)
-        [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
-        [plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
-        plt.ylabel('Z Score')
-
-        plt.subplot(313)
-        returns = self.df.loc[t0:T, 'returns'].cumsum()*100
-        returns.plot()
-        plt.ylabel('Returns (%)')
-        plt.xlabel('Hours')
-        plt.show()
-
     def trade(self, plot=False):
         """
         Executes all trades from the earliest value that the SMA can be
@@ -159,3 +109,53 @@ class zScoreTrader(movingAverageTrader):
 
         if plot:
             self.plotTrading()
+    
+    def plotTrading(self):
+        """
+        Plots the executed trading.
+        3x1 subplots:
+        subplot 1:          asset price w/ longer MA to dictate trend
+                            and shorter MA to determine moves via zscore
+        subplot 2:          Z score with specified bandwidths
+        subplot 3:          Cumulative returns
+
+        Notes:
+        - All three plots have green and red verticle lines indicating
+        opening and closing positions
+        - Will only open longs in uptrend (spotprice > longer MA)
+        and only enter shorts in downtrend (spotprice < longer MA)
+        """
+
+        bw = self.bandwith
+        t0 = self.slowMA.getPeriod()
+        T = self.df.shape[0]
+        zscore_MA = (self.df[self.sym]
+                        .rolling(window=self.zscore.getPeriod())
+                        .mean())
+
+        plt.subplot(311)
+        self.df.loc[t0:T, self.sym].plot(label=self.sym)
+        self.slowMA.getArray().loc[t0:T].plot(label=self.slowMA.name)
+        zscore_MA.loc[t0:T].plot(label=self.zscore.name)
+        if self.fastMA.getPeriod() > 1:
+            self.fastMA.getArray().loc[t0:T].plot(label=self.fastMA.name)
+        plt.ylabel('{}/BTC'.format(self.sym))
+        [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
+        [plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
+        plt.legend()
+
+        plt.subplot(312)
+        self.zscore.getArray().loc[t0:T].plot()
+        plt.plot([t0, T], [bw, bw], c='k', ls='--', lw=0.5)
+        plt.plot([t0, T], [-bw, -bw], c='k', ls='--', lw=0.5)
+        plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)
+        [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
+        [plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
+        plt.ylabel('Z Score')
+
+        plt.subplot(313)
+        returns = self.df.loc[t0:T, 'returns'].cumsum()*100
+        returns.plot()
+        plt.ylabel('Returns (%)')
+        plt.xlabel('Hours')
+        plt.show()
