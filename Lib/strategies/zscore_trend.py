@@ -76,16 +76,12 @@ class zScoreTrader(movingAverageTrader):
             # -----------------------------------------------------------------
             if uptrend and self.position.getPosition() == 0:
                 if Z_t > -self.bandwith and Z_t_1 < -self.bandwith:
-                    # Open long
-                    spotprice = self.getSpotPrice(t)
-                    self.position.open(spotprice, 'L', fee=self.trading_fee)
+                    self.openPosition(t, 'L')
                     self.opentimes.append(t)
 
             if not uptrend and self.position.getPosition() == 0:
                 if Z_t < self.bandwith and Z_t_1 > self.bandwith:
-                    # Open Short
-                    spotprice = self.getSpotPrice(t)
-                    self.position.open(spotprice, 'S', fee=self.trading_fee)
+                    self.openPosition('S')
                     self.opentimes.append(t)
             # -----------------------------------------------------------------
 
@@ -93,16 +89,12 @@ class zScoreTrader(movingAverageTrader):
             # -----------------------------------------------------------------
             if self.position.getPosition() == 1 and Z_t > 0 and Z_t_1 < 0:
                 # Close long
-                spotprice = self.getSpotPrice(t)
-                self.position.close(spotprice, fee=self.trading_fee)
-                self.storeTradeReturns(t)
+                self.closePosition(t)
                 self.closetimes.append(t)
 
             if self.position.getPosition() == -1 and Z_t < 0 and Z_t_1 > 0:
                 # Close short
-                spotprice = self.getSpotPrice(t)
-                self.position.close(spotprice, fee=self.trading_fee)
-                self.storeTradeReturns(t)
+                self.closePosition(t)
                 self.closetimes.append(t)
             # -----------------------------------------------------------------
 
