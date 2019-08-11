@@ -97,6 +97,36 @@ class pairsTrader():
         xreturn = self.yPosition.getTradeReturn()*xratio
 
         self.df.loc[t, 'returns'] = yreturn + xreturn
+    
+    def openPosition(self, t, pos_type):        
+        spotprice = self.getSpreadValue(t) 
+        xspotprice = self.getXValue(t)
+        yspotprice = self.getYValue(t)   
+
+        if pos_type == 'L':            
+            self.spreadPosition.open(spotprice, 'L', fee=self.trading_fee)
+            self.yPosition.open(yspotprice, 'L', fee=self.trading_fee)
+            self.xPosition.open(xspotprice, 'S', fee=self.trading_fee)
+            self.opentimes.append(t)
+        elif pos_type == 'S':            
+            self.spreadPosition.open(spotprice, 'S', fee=self.trading_fee)
+            self.yPosition.open(yspotprice, 'S', fee=self.trading_fee)
+            self.xPosition.open(xspotprice, 'L', fee=self.trading_fee)
+            self.opentimes.append(t)
+        else:
+            raise ValueError("Position type not recognised")
+
+    def closePosition(self, t):
+        spotprice = self.getSpreadValue(t) 
+        xspotprice = self.getXValue(t)
+        yspotprice = self.getYValue(t)   
+
+        self.spreadPosition.close(spotprice, fee=self.trading_fee)
+        self.yPosition.close(yspotprice, fee=self.trading_fee)   
+        self.xPosition.close(xspotprice, fee=self.trading_fee)                  
+        self.closetimes.append(t)
+        self._storeTradeReturns(t)
+
 
     def _kf_linear_regression(self, x, y, plot=True):
         """
@@ -218,9 +248,6 @@ class pairsTrader():
             self._generateZScore(t0=t, T=t+1, period=self.zperiod)
 
             z_t, z_t_1 = self.getZScore(t), self.getZScore(t-1) 
-            spotprice = self.getSpreadValue(t) 
-            xspotprice = self.getXValue(t)
-            yspotprice = self.getYValue(t)      
             position_t = self.spreadPosition.getPosition()
 
             # Open logic
@@ -228,36 +255,22 @@ class pairsTrader():
             if (position_t == 0):
                 if (z_t > - self.bw) and (z_t_1 < -self.bw) and (z_t < 0):   
                     # Long Spread
-                    self.spreadPosition.open(spotprice, 'L', fee=self.trading_fee)
-                    self.yPosition.open(yspotprice, 'L', fee=self.trading_fee)
-                    self.xPosition.open(xspotprice, 'S', fee=self.trading_fee)
-                    self.opentimes.append(t)
+                    self.openPosition(t, 'L')
                 
                 if (z_t < self.bw) and (z_t_1 > self.bw) and (z_t > 0):
                     # Short Spread
-                    self.spreadPosition.open(spotprice, 'S', fee=self.trading_fee)
-                    self.yPosition.open(yspotprice, 'S', fee=self.trading_fee)
-                    self.xPosition.open(xspotprice, 'L', fee=self.trading_fee)
-                    self.opentimes.append(t)
+                    self.openPosition(t, 'S')
             #------------------------------------------------------------------
 
             # Close logic
             #------------------------------------------------------------------
             if (position_t == 1):
                 if (z_t >= 0) and (z_t_1 < 0):
-                    self.spreadPosition.close(spotprice, fee=self.trading_fee)
-                    self.yPosition.close(yspotprice, fee=self.trading_fee)   
-                    self.xPosition.close(xspotprice, fee=self.trading_fee)                  
-                    self.closetimes.append(t)
-                    self._storeTradeReturns(t)
+                    self.closePosition(t)
             
             if (position_t == -1):
                 if (z_t <= 0) and (z_t_1  > 0):     
-                    self.spreadPosition.close(spotprice, fee=self.trading_fee)    
-                    self.yPosition.close(yspotprice, fee=self.trading_fee)   
-                    self.xPosition.close(xspotprice, fee=self.trading_fee)                     
-                    self.closetimes.append(t)
-                    self._storeTradeReturns(t)
+                    self.closePosition(t)
             #------------------------------------------------------------------
 
         if (plot):
