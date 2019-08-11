@@ -62,16 +62,22 @@ class pairsTrader():
         self.df['xMA'] = expMovingAverage(x, 10).getArray()  
         self.df['yMA'] = expMovingAverage(y, 10).getArray()
 
-    def getSpreadValue(self, t):
+    def getSpreadPrice(self, t):
         """
         Gets the value of the spread at index t
         """
         return self.df.loc[t, 'spread']
     
-    def getXValue(self, t):
+    def getXPrice(self, t):
+        """
+        Gets the value of the x price series at time t
+        """
         return self.df.loc[t, self.xsym]
 
-    def getYValue(self, t):
+    def getYPrice(self, t):
+        """
+        gets the value of the y price series at time t
+        """
         return self.df.loc[t, self.ysym]    
 
     def getHedgeRatio(self, t):
@@ -98,18 +104,21 @@ class pairsTrader():
 
         self.df.loc[t, 'returns'] = yreturn + xreturn
     
-    def openPosition(self, t, pos_type):        
-        spotprice = self.getSpreadValue(t) 
-        xspotprice = self.getXValue(t)
-        yspotprice = self.getYValue(t)   
+    def openPosition(self, t, pos_type):
+        """
+        Opens a position at time t.
+        """  
+        spreadprice = self.getSpreadPrice(t) 
+        xspotprice = self.getXPrice(t)
+        yspotprice = self.getYPrice(t)   
 
         if pos_type == 'L':            
-            self.spreadPosition.open(spotprice, 'L', fee=self.trading_fee)
+            self.spreadPosition.open(spreadprice, 'L', fee=self.trading_fee)
             self.yPosition.open(yspotprice, 'L', fee=self.trading_fee)
             self.xPosition.open(xspotprice, 'S', fee=self.trading_fee)
             self.opentimes.append(t)
         elif pos_type == 'S':            
-            self.spreadPosition.open(spotprice, 'S', fee=self.trading_fee)
+            self.spreadPosition.open(spreadprice, 'S', fee=self.trading_fee)
             self.yPosition.open(yspotprice, 'S', fee=self.trading_fee)
             self.xPosition.open(xspotprice, 'L', fee=self.trading_fee)
             self.opentimes.append(t)
@@ -117,11 +126,14 @@ class pairsTrader():
             raise ValueError("Position type not recognised")
 
     def closePosition(self, t):
-        spotprice = self.getSpreadValue(t) 
-        xspotprice = self.getXValue(t)
-        yspotprice = self.getYValue(t)   
+        """
+        closes a position at time t
+        """
+        spreadprice = self.getSpreadPrice(t) 
+        xspotprice = self.getXPrice(t)
+        yspotprice = self.getYPrice(t)   
 
-        self.spreadPosition.close(spotprice, fee=self.trading_fee)
+        self.spreadPosition.close(spreadprice, fee=self.trading_fee)
         self.yPosition.close(yspotprice, fee=self.trading_fee)   
         self.xPosition.close(xspotprice, fee=self.trading_fee)                  
         self.closetimes.append(t)
