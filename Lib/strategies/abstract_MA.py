@@ -73,6 +73,27 @@ class movingAverageTrader(metaclass=abc.ABCMeta):
 
         self.df.loc[t, 'returns'] = self.position.getTradeReturn()
 
+    def openPosition(self, t, pos_type):
+        """
+        Opens a position at time t
+        """
+        spotprice = self.getSpotPrice(t)
+        if pos_type == 'L':
+            self.position.open(spotprice, 'L', fee=self.trading_fee)
+        elif pos_type == 'S':
+            self.position.open(spotprice, 'S', fee=self.trading_fee)
+        else:
+            raise ValueError("Position type not recognised")
+    
+    def closePosition(self, t):
+        """
+        Closes a position at time t
+        """
+        spotprice = self.getSpotPrice(t)
+        self.position.close(spotprice, fee=self.trading_fee)
+        self.storeTradeReturns(t)  
+
+
     @abc.abstractmethod
     def plotTrading(self, opentimes, closetimes):
         """

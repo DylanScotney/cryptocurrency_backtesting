@@ -89,19 +89,15 @@ class crossoverTrader(movingAverageTrader):
             fastMA_t_1 = self.fastMA.getValue(t-1)
 
             if fastMA_t > slowMA_t and fastMA_t_1 < slowMA_t_1:
-                spotprice = self.getSpotPrice(t)
                 if self.position.getPosition() != 0:
-                    self.position.close(spotprice, fee=self.trading_fee)
-                    self.storeTradeReturns(t)                
-                self.position.open(spotprice, 'L', fee=self.trading_fee)
+                    self.closePosition(t)
+                self.openPosition(t, 'L')                
                 longtimes.append(t)
 
             if fastMA_t < slowMA_t and fastMA_t_1 > slowMA_t_1:
-                spotprice = self.getSpotPrice(t)
                 if self.position.getPosition() != 0:
-                    self.position.close(spotprice, fee=self.trading_fee)
-                    self.storeTradeReturns(t)                
-                self.position.open(spotprice, 'S', fee=self.trading_fee)
+                    self.closePosition(t)
+                self.openPosition(t, 'S')              
                 shorttimes.append(t)
 
         if plot:
