@@ -29,7 +29,7 @@ class pairsTrader():
     Members:
     - self.name:                (str) name of the spread, used for plots
     - self.xsym, ysym:          (str) name of each series x,y
-    - self.position:            (Position) custom position object for 
+    - self.spreadPosition:            (Position) custom position object for 
                                 handling trade positions.
     - self.trading_fee:         (float) fractional trading fee
     - self.opentimes,
@@ -43,7 +43,9 @@ class pairsTrader():
     def __init__(self, x, y, asset1, asset2, zperiod, bandwidth=2.0, fee=0.0):
         self.name = asset1 + "/" + asset2        
         self.xsym, self.ysym = asset1, asset2
-        self.position = Position()
+        self.spreadPosition = Position()
+        self.xPosition = Position()
+        self.yPosition = Position()
         self.bw = bandwidth
         self.zperiod = zperiod
         self.trading_fee = fee
@@ -57,14 +59,20 @@ class pairsTrader():
         self.df['returns'] = 0.0
 
         # Use of a moving average to smooth spread
-        self.df['xMA'] = expMovingAverage(x, 80).getArray()  
-        self.df['yMA'] = expMovingAverage(y, 80).getArray()
+        self.df['xMA'] = expMovingAverage(x, 10).getArray()  
+        self.df['yMA'] = expMovingAverage(y, 10).getArray()
 
     def getSpreadValue(self, t):
         """
         Gets the value of the spread at index t
         """
         return self.df.loc[t, 'spread']
+    
+    def getXValue(self, t):
+        return self.df.loc[t, self.xsym]
+
+    def getYValue(self, t):
+        return self.df.loc[t, self.ysym]    
 
     def getHedgeRatio(self, t):
         """
@@ -80,9 +88,15 @@ class pairsTrader():
 
     def _storeTradeReturns(self, t):
         """
-        stores trade returns from closing a position in index t
+        Stores trade returns from closing a position in index t
         """
-        self.df.loc[t, 'returns'] = self.position.getTradeReturn()
+        HR = self.getHedgeRatio(t)
+        yratio, xratio = 1.0 / (1.0 + HR), HR / (1.0 + HR)
+
+        yreturn = self.yPosition.getTradeReturn()*yratio
+        xreturn = self.yPosition.getTradeReturn()*xratio
+
+        self.df.loc[t, 'returns'] = yreturn + xreturn
 
     def _kf_linear_regression(self, x, y, plot=True):
         """
@@ -146,7 +160,7 @@ class pairsTrader():
         if(T is None):
             T = self.df.shape[0]       
         
-        if self.position.getPosition() == 0:
+        if self.spreadPosition.getPosition() == 0:
             hold_hedge_ratio = False
         else:
             hold_hedge_ratio = True        
@@ -193,8 +207,10 @@ class pairsTrader():
         """
         
         
-        t0, T = self.zperiod, 10#self.df.shape[0]-1
+        t0, T = self.zperiod, self.df.shape[0]-1
         position_t = 0
+        self._generateSpread(T=t0)
+        self._generateZScore(T=t0, period=self.zperiod)
 
         for t in range(t0, T):
             
@@ -202,20 +218,26 @@ class pairsTrader():
             self._generateZScore(t0=t, T=t+1, period=self.zperiod)
 
             z_t, z_t_1 = self.getZScore(t), self.getZScore(t-1) 
-            spotprice = self.getSpreadValue(t)       
-            position_t = self.position.getPosition()
+            spotprice = self.getSpreadValue(t) 
+            xspotprice = self.getXValue(t)
+            yspotprice = self.getYValue(t)      
+            position_t = self.spreadPosition.getPosition()
 
             # Open logic
             #------------------------------------------------------------------
-            if (position_t == 0) and spotprice > 1e-6:
+            if (position_t == 0):
                 if (z_t > - self.bw) and (z_t_1 < -self.bw) and (z_t < 0):   
-                    # Open Long
-                    self.position.open(spotprice, 'L', fee=self.trading_fee)
+                    # Long Spread
+                    self.spreadPosition.open(spotprice, 'L', fee=self.trading_fee)
+                    self.yPosition.open(yspotprice, 'L', fee=self.trading_fee)
+                    self.xPosition.open(xspotprice, 'S', fee=self.trading_fee)
                     self.opentimes.append(t)
                 
                 if (z_t < self.bw) and (z_t_1 > self.bw) and (z_t > 0):
-                    # Open short
-                    self.position.open(spotprice, 'S', fee=self.trading_fee)
+                    # Short Spread
+                    self.spreadPosition.open(spotprice, 'S', fee=self.trading_fee)
+                    self.yPosition.open(yspotprice, 'S', fee=self.trading_fee)
+                    self.xPosition.open(xspotprice, 'L', fee=self.trading_fee)
                     self.opentimes.append(t)
             #------------------------------------------------------------------
 
@@ -223,17 +245,21 @@ class pairsTrader():
             #------------------------------------------------------------------
             if (position_t == 1):
                 if (z_t >= 0) and (z_t_1 < 0):
-                    self.position.close(spotprice, fee=self.trading_fee)
-                    self._storeTradeReturns(t)
+                    self.spreadPosition.close(spotprice, fee=self.trading_fee)
+                    self.yPosition.close(yspotprice, fee=self.trading_fee)   
+                    self.xPosition.close(xspotprice, fee=self.trading_fee)                  
                     self.closetimes.append(t)
+                    self._storeTradeReturns(t)
             
             if (position_t == -1):
-                if (z_t <= 0) and (z_t_1  > 0):                   
-                    self.position.close(spotprice, fee=self.trading_fee)
-                    self._storeTradeReturns(t)
+                if (z_t <= 0) and (z_t_1  > 0):     
+                    self.spreadPosition.close(spotprice, fee=self.trading_fee)    
+                    self.yPosition.close(yspotprice, fee=self.trading_fee)   
+                    self.xPosition.close(xspotprice, fee=self.trading_fee)                     
                     self.closetimes.append(t)
+                    self._storeTradeReturns(t)
             #------------------------------------------------------------------
-        
+
         if (plot):
             self.plotTrading(t0=t0, T=T)
         
@@ -246,11 +272,14 @@ class pairsTrader():
 
         plt.subplot(311)
         self.df.loc[t0:T, 'spread'].plot()
+        plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)
         plt.ylabel(self.name)
         plt.subplot(312)
-        self.df.loc[t0:T, 'zscore'].plot()
+        self.df.loc[t0:T, 'zscore'].plot()        
+        plt.plot([t0, T], [2, 2], c='k', ls='--', lw=0.5)
+        plt.plot([t0, T], [-2, -2], c='k', ls='--', lw=0.5)
         plt.ylabel('Z Score')
-        plt.subplot(313)
+        plt.subplot(313)       
         self.df.loc[t0:T, 'HR'].plot()
         plt.ylabel("Hedge Ratio")            
         plt.xlabel("Time (hours)")
