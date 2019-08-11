@@ -26,7 +26,7 @@ class webLoading(dataLoadingStrat):
                     DataFrame
     """
 
-    def __init__(self, symbols, ticksize, end_date,
+    def __init__(self, api_key, symbols, ticksize, end_date,
                  lookback, outfile_raw, outfile_df):
 
         if not all(isinstance(symbol, str) for symbol in symbols):
@@ -41,7 +41,9 @@ class webLoading(dataLoadingStrat):
 
         if not ((isinstance(lookback, int)) and (lookback >= 1)):
             raise ValueError("lookback must be a positive int")
-
+        
+        # private memebers as to be instiated on construction only
+        self._key = api_key
         self._symbols = symbols
         self._ticksize = ticksize
         self._end_date = end_date
@@ -71,10 +73,10 @@ class webLoading(dataLoadingStrat):
         - timestamp:        (int) Timestamp of the latest date of dataset
         """
         if timestamp == 'none':
-            url = ("https://min-api.cryptocompare.com/data/histo{}?fsym={}&tsym=BTC&limit={}&api_key=ed65515376edee87d01ec914bebcd66d66f97cb4f0b7266f54a043b0966758b9".format(self._ticksize, symbol, limit))
+            url = ("https://min-api.cryptocompare.com/data/histo{}?fsym={}&tsym=BTC&limit={}&api_key={}".format(self._ticksize, symbol, limit, self._key))
 
         else:
-            url = ("https://min-api.cryptocompare.com/data/histo{}?fsym={}&tsym=BTC&limit={}&toTs={}&api_key=ed65515376edee87d01ec914bebcd66d66f97cb4f0b7266f54a043b0966758b9".format(self._ticksize, symbol, limit, timestamp))
+            url = ("https://min-api.cryptocompare.com/data/histo{}?fsym={}&tsym=BTC&limit={}&toTs={}&api_key={}".format(self._ticksize, symbol, limit, timestamp, self._key))
         return url
 
     def _pull_data(self, symbol, limit, timestamp='none'):
