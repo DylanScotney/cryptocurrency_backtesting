@@ -161,5 +161,6 @@ class fileLoadingDF(dataLoadingStrat):
 
     def get_data(self):      
         df = pd.read_csv(self._infile)
-        df = df.drop(columns=['Unnamed: 0'])  # Drop index column
+        if 'Unnamed: 0' in df.keys():
+            df = df.drop(columns=['Unnamed: 0'])  # Drop index column
         return df
