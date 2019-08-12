@@ -159,5 +159,7 @@ class fileLoadingDF(dataLoadingStrat):
         else:
             raise ValueError("infile must be csv format")
 
-    def get_data(self):
-        return pd.read_csv(self._infile)
+    def get_data(self):      
+        df = pd.read_csv(self._infile)
+        df = df.drop(columns=['Unnamed: 0'])  # Drop index column
+        return df
