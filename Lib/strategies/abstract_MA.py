@@ -26,8 +26,17 @@ class movingAverageTrader(metaclass=abc.ABCMeta):
     - MA_type:          (str) 'SMA' or 'EMA' for simple MA or
                         exponential MA
     - trading_fee:      (double) fractional trading fee between 0 and 1
-    - position:         (Position) position class object see
-                        position_class.py
+
+    Members:
+    - self.df:          df (see initialisation)
+    - self.sym:         asset_symbol (see initialisation)
+    - self.trading_fee: tradine_fee (see initialisation)
+    - self.position:    (Position) Custom position object to handle
+                        trade positions
+    - self.fastMA:      (moving average) custom moving average type
+                        object that handles moving average of series
+    - self.slowMA:      moving average with longer period than
+                        self.fastMA
 
     Notes:
     - Currently designed to only open one positon at a time
@@ -58,8 +67,8 @@ class movingAverageTrader(metaclass=abc.ABCMeta):
             self.slowMA = simpleMovingAverage(df[self.sym], slow_MA)
         elif MA_type == 'EMA':
             self.fastMA = expMovingAverage(df[self.sym], fast_MA)
-            self.slowMA = expMovingAverage(df[self.sym], slow_MA) 
-   
+            self.slowMA = expMovingAverage(df[self.sym], slow_MA)
+
     def getSpotPrice(self, t):
         """
         Gets the spot price at index t in self.df
@@ -84,15 +93,14 @@ class movingAverageTrader(metaclass=abc.ABCMeta):
             self.position.open(spotprice, 'S', fee=self.trading_fee)
         else:
             raise ValueError("Position type not recognised")
-    
+
     def closePosition(self, t):
         """
         Closes a position at time t
         """
         spotprice = self.getSpotPrice(t)
         self.position.close(spotprice, fee=self.trading_fee)
-        self.storeTradeReturns(t)  
-
+        self.storeTradeReturns(t)
 
     @abc.abstractmethod
     def plotTrading(self, opentimes, closetimes):
