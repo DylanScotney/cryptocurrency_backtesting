@@ -6,10 +6,22 @@ class simpleMovingAverage():
     Class that handles the simple moving average of a timeseries. 
 
     Initialisation:
-    - series:               pandas series
+    - series:               (pd series) of asset
     - period:               (int) period of moving average
-    - _MA:                  (pandas series) stores SMA series
-    - name:                 name of object - can be used for plot labels
+
+    Members:
+    - self._period:         (int) period of moving average
+    - self._MA:             (pd series, float) panda series of moving 
+                            average values
+    - self.name:            (str) name of object. Primarily used for 
+                            plot labels.
+
+    Notes:
+    - Requires series input is a pandas series
+
+    To Do:
+    - Generalise series input to take any type of list/array and convert
+    to pandas series on construction.
     """
 
     def __init__(self, series, period):
