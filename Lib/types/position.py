@@ -4,6 +4,18 @@ class Position():
     Position class that handles a trade position. Opens and closes
     positions and calculats the return
 
+    Members: 
+    - self._pos:                (int) Can be -1, 0, 1. Defines the
+                                current position where -1 and 1
+                                represent being short or long
+                                respectively.
+    - self._entryprice:         (float) Asset price in which position
+                                was entered/opened.
+    -self._exitprice:           (float) Asset price in which position
+                                was exited/closed.
+    self._tradereturn:          (float) Fractional return from a round
+                                trip trade.
+
     Notes:
     - Currently assumes positions are fixed size of "one unit" so
     so returns are given in terms of percentage rather than absolute
