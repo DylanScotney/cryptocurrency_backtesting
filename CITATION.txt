@@ -1,6 +1,11 @@
 To cite this software please use the following:
 
-Author: Dylan Scotney
-Title: <Title>
-Version: <Version>
-Date released: <Date>
+Author: Dylan Scotney, dylanlewisscotney@gmail.com
+
+Title: Accompanying Code for UCL MSc Thesis: 
+The Validation of Systematic Trading Strategies 
+Applied to the Cryptocurrency Market. 
+
+Version: 1.0.0
+
+Date released: 13/08/2019
