@@ -3,8 +3,8 @@ class backtest():
     """
     Context class for implementing trading strategies.
 
-    Construction:
-    - strategy:             Trading strategy class such as:
+    Members:
+    - self._strategy:       Trading strategy class such as:
                             crossoverTrading, zScoreTrading.
     - plot_results:         bool to indicate whether to plot trading
                             activity.
