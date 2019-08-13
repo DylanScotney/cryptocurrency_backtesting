@@ -1,11 +1,13 @@
-# (--Title--)
+# The Validation of Systematic Trading Strategies Applied to the Cryptocurrency Market
+
+
+
 ## Dylan Scotney
-### _Deparment of Physics, University College London_ 
-### Accompanying code for [Thesis](---Add Thesis File---)
+### Accompanying code for a dissertation submitted in partial fulfilment  of the requirements for the degree of  Master of Science of University College London
 
 #
 
-This package was written in order to validate some trading algorithms
+This package was written in order to validate some trading strategies
 applied to the crytocurrency market. 
 Data was sourced from the [CryptoCompare API](https://min-api.cryptocompare.com). 
 Data from CryptoCompare is sourced from an aggregated feed of over 150 
@@ -13,7 +15,7 @@ crypto exchanges giving you reliable and up-to-date traded rates that
 are used globally. We have systems in place to remove irregular prices, 
 giving you the cleanest prices available. [Read more](https://www.cryptocompare.com/media/27010937/cccagg_methodology_2018-02-26.pdf).
 
-#### Dependencies:
+## **Dependencies**:
 This package uses the following libraries, and any of their subsequent dependencies. 
 
 * abc
@@ -29,14 +31,14 @@ This package uses the following libraries, and any of their subsequent dependenc
 
 ## Code Overview
 
-#### Data Loading
+### **Data Loading**
 Data loading/management is built using a strategy pattern:
 
-* Context class: [dataLoader()](\\Lib\\data_loader.py)
-* Abstract interface class: [dataLoadingStrat()](\\Lib\\abstract_data_loading_strategy.py)
-* Concrete implementation 1: [webLoading()](\\Lib\\web_loading_strategies.py)
-* Concrete implentation 2: [fileLoadingRaw()](\\Lib\\file_loading_strategies.py)
-* Concrete implementation 3: [fileLoadingDF()](\\Lib\\file_loading_strategies.py)
+* Context class: [dataLoader()](\\Lib\\data_loading\\data_loader.py)
+* Abstract interface class: [dataLoadingStrat()](\\Lib\\data_loading\\abstract_data_loading_strategy.py)
+* Concrete implementation 1: [webLoading()](\\Lib\\data_loading\\web_loading_strategies.py)
+* Concrete implentation 2: [fileLoadingRaw()](\\Lib\\data_loading\\file_loading_strategies.py)
+* Concrete implementation 3: [fileLoadingDF()](\\Lib\\data_loading\\file_loading_strategies.py)
 
 Example useage:
 
@@ -77,12 +79,24 @@ data = loader.get_data()
 All three approaches store close prices in a pandas dataframe along with 
 corresponding dates
 
-#### Backtesting
-Trading strateies are built and tested again using a stratergy pattern:
+
+### **Custom Types**
+To handle data and strategies in an object oriented manner, several 
+custom types/classes were created these were: 
+* [Position](\\Lib\\types\\position.py)
+* [zScore](\\Lib\\types\\zscore.py)
+* [simpleMovingAverage](\\Lib\\types\\simple_moving_average.py)
+* [expMovingAverage](\\Lib\\types\\exponential_moving_average.py)
+
+
+
+### **Backtesting Strategies**
+All backtesting strategies were built to use a fixed position sizing. Trading strateies are built and tested again using a stratergy pattern:
 * Context class: [backtest()](\\Lib\\strategy_backtester.py)
-* Abstract interface class: [movingAverageTrading()](\\Lib\\abstract_MA_trading_strategy.py)
-* Concrete implmentation 1: [crossoverTrading()](\\Lib\\crossover_trading_strategy.py)
+* Abstract interface class: [movingAverageTrader()](\\Lib\\strategies\\abstract_MA.py)
+* Concrete implmentation 1: [crossoverTrading()](\\Lib\\strategies\\crossover.py)
 * Concrete implementation 2: [zScoreTrading()](\\Lib\\zscore_trading_strategy.py)
+
 
 Example usage:
 
