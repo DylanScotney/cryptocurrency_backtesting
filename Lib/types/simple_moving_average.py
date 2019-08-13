@@ -1,9 +1,10 @@
 import pandas as pd
 
+
 class simpleMovingAverage():
 
     """
-    Class that handles the simple moving average of a timeseries. 
+    Class that handles the simple moving average of a timeseries.
 
     Initialisation:
     - series:               (pd series) of asset
@@ -11,9 +12,9 @@ class simpleMovingAverage():
 
     Members:
     - self._period:         (int) period of moving average
-    - self._MA:             (pd series, float) panda series of moving 
+    - self._MA:             (pd series, float) panda series of moving
                             average values
-    - self.name:            (str) name of object. Primarily used for 
+    - self.name:            (str) name of object. Primarily used for
                             plot labels.
 
     Notes:
@@ -26,7 +27,7 @@ class simpleMovingAverage():
 
     def __init__(self, series, period):
         if not isinstance(period, int) or period < 1:
-            raise ValueError("Period must be a positive int")            
+            raise ValueError("Period must be a positive int")
         if not isinstance(series, pd.Series):
             raise ValueError("Series must be a pandas series")
 
@@ -39,7 +40,7 @@ class simpleMovingAverage():
         Returns value of moving average at index t
         """
         return self._MA[t]
-    
+
     def getPeriod(self):
         """
         Returns period of moving average
