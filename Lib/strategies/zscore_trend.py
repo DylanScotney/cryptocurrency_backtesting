@@ -4,11 +4,12 @@ import pandas as pd
 from .abstract_MA import movingAverageTrader
 from ..types.zscore import zScore
 
+
 class zScoreTrader(movingAverageTrader):
     """
-    A class that backtests a z score based trading algorithm which
-    attempts to capitalise on the over compensation of moves in the
-    cryptocurrency market.
+    A class that backtests a z score and MA based trading algorithm
+    which attempts to capitalise on the over compensation of moves in
+    the cryptocurrency market.
 
     Returns are stored under df['returns']. Refer to base class,
     movingAverageTrading for more details.
@@ -17,7 +18,7 @@ class zScoreTrader(movingAverageTrader):
     trend. Only longs (shorts) trades will be executed if asset is in
     uptrend (downtrend).
     A second (typically shorter) lookback period is used to determine
-    the zscore of the asset and execute trading logic
+    the zscore of the asset and execute trading logic.
 
     Initialisation:
     - df:               pandas dataframe containing asset price history
@@ -30,6 +31,22 @@ class zScoreTrader(movingAverageTrader):
     - fast_MA:          A MA period shorter than slow_MA that will
                         determine trend. If not specified period=0
                         (i.e. spotprice is used)
+
+    Members:
+    - self.df:          df (see initialisation)
+    - self.sym:         asset_symbol (see initialisation)
+    - self.trading_fee: tradine_fee (see initialisation)
+    - self.position:    (Position) Custom position object to handle
+                        trade positions.
+    - self.fastMA:      (moving average) custom moving average type
+                        object that handles moving average of series.
+    - self.slowMA:      moving average with longer period than
+                        self.fastMA.
+    - self.zscore:      (zScore) custom zScore object that handles
+                        z score of corresponding series.
+    - self.bandwidth:   (float) bandwidth for trading logic
+    - self.opentimes:   (list, int) holds indeces of trade opening times
+    - self.closetimes:  (list, int) holds indeces of trade closing times
 
     Notes:
     - Currently designed to only open one positon at a time
@@ -98,7 +115,7 @@ class zScoreTrader(movingAverageTrader):
 
         if plot:
             self.plotTrading()
-    
+
     def plotTrading(self):
         """
         Plots the executed trading.
@@ -119,8 +136,8 @@ class zScoreTrader(movingAverageTrader):
         t0 = self.slowMA.getPeriod()
         T = self.df.shape[0]
         zscore_MA = (self.df[self.sym]
-                        .rolling(window=self.zscore.getPeriod())
-                        .mean())
+                     .rolling(window=self.zscore.getPeriod())
+                     .mean())
 
         plt.subplot(311)
         self.df.loc[t0:T, self.sym].plot(label=self.sym)
