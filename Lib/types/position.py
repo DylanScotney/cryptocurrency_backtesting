@@ -13,7 +13,7 @@ class Position():
                                 was entered/opened.
     -self._exitprice:           (float) Asset price in which position
                                 was exited/closed.
-    self._tradereturn:          (float) Fractional return from a round
+    - self._tradereturn:        (float) Fractional return from a round
                                 trip trade.
 
     Notes:
