@@ -1,16 +1,32 @@
 import pandas as pd
 
+
 class zScore():
     """
-    Class that handles zscore of a series
+    Class that computes and handles zscore of a series.
 
     Initialisation:
-    - series:               pandas series
+    - series:               (pandas series) of series values
     - period:               (int) lookback period for zscore
-    - _zscore:              (pandas series) stores zscore of series
-    - name:                 name of object - can be used for plot labels
+
+    Members:
+    - self._period:         (int) lookback period for z score
+    - self.name:            (str) name of the object. Primarily used
+                            for plot labels
+    - self._zScore:         (pd series, float) z score of the
+                            corresponding series.
+
+    Notes:
+    - Currently requires input series to be a pandas series.
+    - Doesn't store input series to save memory.
+
+    To Do:
+    - Improve generalisation by taking series input to be a
+    list/np array/pandas series and convert to pandas series if
+    necessary
+    - Add option to store corresponding input series.
     """
-    
+
     def __init__(self, series, period):
         if not isinstance(period, int) or period < 1:
             raise ValueError("Period must be a positive int")
@@ -31,7 +47,7 @@ class zScore():
         Returns value of zscore at index t
         """
         return self._zScore[t]
-    
+
     def getPeriod(self):
         """
         Returns lookback period for zscore
