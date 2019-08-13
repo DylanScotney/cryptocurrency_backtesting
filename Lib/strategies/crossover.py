@@ -27,6 +27,17 @@ class crossoverTrader(movingAverageTrader):
                         exponential MA
     - trading_fee:      (double) fractional trading fee between 0 and 1
 
+    Members:
+    - self.df:          df (see initialisation)
+    - self.sym:         asset_symbol (see initialisation)
+    - self.trading_fee: tradine_fee (see initialisation)
+    - self.position:    (Position) Custom position object to handle
+                        trade positions
+    - self.fastMA:      (moving average) custom moving average type
+                        object that handles moving average of series
+    - self.slowMA:      moving average with longer period than
+                        self.fastMA
+
     Notes:
     - Currently designed to only open one positon at a time
     - Opening a long simultaneously closes any open shorts
@@ -69,7 +80,6 @@ class crossoverTrader(movingAverageTrader):
         plt.xlabel('Hours')
         plt.show()
 
-
     def trade(self, plot=False):
         """
         Executes all trades from the earliest value that the SMA can be
@@ -91,13 +101,13 @@ class crossoverTrader(movingAverageTrader):
             if fastMA_t > slowMA_t and fastMA_t_1 < slowMA_t_1:
                 if self.position.getPosition() != 0:
                     self.closePosition(t)
-                self.openPosition(t, 'L')                
+                self.openPosition(t, 'L')
                 longtimes.append(t)
 
             if fastMA_t < slowMA_t and fastMA_t_1 > slowMA_t_1:
                 if self.position.getPosition() != 0:
                     self.closePosition(t)
-                self.openPosition(t, 'S')              
+                self.openPosition(t, 'S')
                 shorttimes.append(t)
 
         if plot:
