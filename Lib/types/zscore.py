@@ -38,6 +38,9 @@ class zScore():
         self._zScore = self.generateZScore(series)
 
     def generateZScore(self, series):
+        """
+        Generates the z score of the input series.
+        """
         mean = series.rolling(window=self._period).mean()
         std = series.rolling(window=self._period).std()
         return (series - mean)/std
