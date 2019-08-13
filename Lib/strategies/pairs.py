@@ -344,8 +344,8 @@ class pairsTrader():
         plt.subplot(414)
         returns = self.df.loc[t0:T, 'returns'].cumsum()*100
         returns.plot()        
-        [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
-        [plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
+        #[plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
+        #[plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
         plt.ylabel('Returns (%)')
         plt.xlabel('Hours')
         plt.show()

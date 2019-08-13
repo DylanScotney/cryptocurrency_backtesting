@@ -7,6 +7,7 @@ from matplotlib.ticker import FuncFormatter
 from ..Lib.data_loading.file_loading_strategies import fileLoadingDF
 from ..Lib.data_loading.data_loader import dataLoader
 from ..Lib.strategies.pairs import pairsTrader
+from ..Lib.strategy_backtester import backtest
 
 cpath = os.path.dirname(__file__)  # current path
 
@@ -17,7 +18,8 @@ def main():
     infile = cpath + "\\..\\Data\\cryptocompareBTC_10000_hours_df.csv"    
     loading_strat = fileLoadingDF(infile)
     loader = dataLoader(loading_strat)
-    df = loader.get_data()
+    df = loader.get_data()    
+    df_csv = df[['date']].drop(columns=['date'])
     df = df.drop(columns=['date', 'ETC', 'BCH', 'MKR'])
     #--------------------------------------------------------------------------
     #get_coint_pairs(df, plot=True)
@@ -35,27 +37,33 @@ def main():
              ['ZRX', 'ZEC', 0.009726960805872743],
              ['OMG', 'QTUM', 6.816664786159693e-05],
              ['STRAT', 'QTUM', 0.021838747291384023]]
-
-    zperiods = [5,8,10,12,15,20,50,100]
-    bandwidths = [1.0, 1.5, 1.75, 2.0, 2.25, 2.5]
+    pairs = [['QTUM', 'MIOTA']]
+    zperiods = [7]#[5,7,8,9,10,12,15,20,50,100]
+    bandwidths = [2.0]#, 1.5, 1.75, 2.0, 2.25, 2.5]    
     returns = np.zeros((len(bandwidths), len(zperiods)))
     for i in range(len(bandwidths)):
-        bandwidth = bandwidths[i]
+        bandwidth = bandwidths[i]        
         for j in range(len(zperiods)):
             period = zperiods[j]
             for pair in pairs:
                 asset1, asset2 = pair[0], pair[1]
-                print(asset1, asset2)
-                x = df.loc[:, asset1]
-                y = df.loc[:, asset2]
-                trader = pairsTrader(x, y, asset1, asset2, 
+                print(asset1, asset2, bandwidth, period)
+                x = df.loc[:1000, asset1]
+                y = df.loc[:1000, asset2]
+                strategy = pairsTrader(x, y, asset1, asset2, 
                                      zperiod=period, bandwidth=bandwidth)
+                trader = backtest(strategy, plot_results=True)
                 trader.trade()
-                returns[i, j] += (100/len(pairs)) * trader.df['returns'].cumsum().iloc[-1]
+                returns[i, j] += strategy.df['returns'].cumsum().iloc[-1]
+
+                header = asset1+"_"+asset2+"_"+str(bandwidth)+"_"+ str(period)
+                df_csv[header] = strategy.df['returns']
     
-    
+    df_csv.to_csv("test.csv")
+
+    returns = returns*100/len(pairs)
     plt.imshow(returns, cmap='RdBu')
-    plt.colorbar(format=FuncFormatter(fmt1))
+    plt.colorbar(format=FuncFormatter(fmt))
     max_ret = max(returns.min(), returns.max(), key=abs)
     plt.clim(vmin=-max_ret, vmax=max_ret)
     plt.xticks(np.arange(len(zperiods)), zperiods)
@@ -111,7 +119,7 @@ def get_coint_pairs(df, threshold=0.05, plot=False):
 
     return p_values, pairs
 
-def fmt1(x, pos):
+def fmt(x, pos):
     """
     Formats colourbar to display as a percentage
     """

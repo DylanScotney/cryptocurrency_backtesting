@@ -88,12 +88,10 @@ class zScoreTrader(movingAverageTrader):
             # Close position logic
             # -----------------------------------------------------------------
             if self.position.getPosition() == 1 and Z_t > 0 and Z_t_1 < 0:
-                # Close long
                 self.closePosition(t)
                 self.closetimes.append(t)
 
             if self.position.getPosition() == -1 and Z_t < 0 and Z_t_1 > 0:
-                # Close short
                 self.closePosition(t)
                 self.closetimes.append(t)
             # -----------------------------------------------------------------

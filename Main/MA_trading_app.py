@@ -37,6 +37,7 @@ def main():
     #--------------------------------------------------------------------------
     symbols = [key for key in df.keys() if key not in ['date', 'ETC', 'BCH', 'MKR']]
     MA_list = [1, 10, 20, 40, 50, 80, 100, 120, 160, 200, 240, 280, 320, 360, 400]
+    symbols = ['ETH']
     MA_list = [40, 80]
     if plot_results:
         returns = np.zeros((len(MA_list), len(MA_list))) # store final returns
@@ -57,7 +58,7 @@ def main():
                 asset_df = df[['date', symbol]].reset_index()
                 strategy = crossoverTrader(asset_df, symbol, MA_type, slow_MA, 
                                            fast_MA=fast_MA, trading_fee=0.0)
-                trader = backtest(strategy)
+                trader = backtest(strategy, plot_results=True)
                 trader.trade()
 
                 if plot_results:
