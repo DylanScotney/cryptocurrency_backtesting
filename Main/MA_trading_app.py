@@ -19,9 +19,7 @@ def main():
     save_results = False
     plot_results = True
     MA_type = 'SMA'
-    if save_results:
-        results_outfile = cpath + "\\..\\Data\\EMA_results.csv"
-    symbols = [symbol.rstrip('\n') for symbol in open(cpath+"\\..\\Data\\list_of_tickers.txt")]
+    results_outfile = cpath + "EMA_results.csv"
 
     # Load Dataframe
     #--------------------------------------------------------------------------
@@ -35,14 +33,11 @@ def main():
 
     # Define Trading Parameters
     #--------------------------------------------------------------------------
-    symbols = [key for key in df.keys() if key not in ['date', 'ETC', 'BCH', 'MKR']]
-    MA_list = [1, 10, 20, 40, 50, 80, 100, 120, 160, 200, 240, 280, 320, 360, 400]
-    symbols = ['ETH']
-    MA_list = [40, 80]
-    if plot_results:
-        returns = np.zeros((len(MA_list), len(MA_list))) # store final returns
-        ave_return = np.zeros((len(MA_list), len(MA_list)))
-        num_trades = 0
+    symbols = [key for key in df.keys() if key not in ['date']]
+    MA_list = [1, 10, 20, 40, 50, 80, 100, 160]
+    returns = np.zeros((len(MA_list), len(MA_list))) # store final returns
+    ave_return = np.zeros((len(MA_list), len(MA_list)))
+    num_trades = 0
     #--------------------------------------------------------------------------
     
     # Execute Trading
@@ -53,20 +48,17 @@ def main():
                 fast_MA = MA_list[i]                
                 slow_MA = MA_list[j]
 
-                print("Trading {} for {} v {}".format(symbol, slow_MA, fast_MA))
-
                 asset_df = df[['date', symbol]].reset_index()
                 strategy = crossoverTrader(asset_df, symbol, MA_type, slow_MA, 
                                            fast_MA=fast_MA, trading_fee=0.0)
                 trader = backtest(strategy, plot_results=True)
                 trader.trade()
+                
+                returns[j, i] += asset_df['returns'].cumsum().iloc[-1]
+                trade_rets = [ret for ret in asset_df['returns'] if ret != 0]
+                num_trades += len(trade_rets)
+                ave_return[j, i] += np.mean(trade_rets)
 
-                if plot_results:
-                    returns[j, i] += asset_df['returns'].cumsum().iloc[-1]
-                    trade_rets = [ret for ret in asset_df['returns'] if ret != 0]
-                    num_trades += len(trade_rets)
-
-                    ave_return[j, i] += np.mean(trade_rets)
                 if save_results:
                     header = '{}_{}_{}'.format(symbol, slow_MA, fast_MA)
                     df_csv[header] = asset_df['returns']
@@ -78,8 +70,6 @@ def main():
     num_symbols = float(len(symbols))
     returns = returns*100/num_symbols # average returns as a percentage
     ave_return = ave_return*100/num_symbols
-    print("number of trades: {}".format(num_trades))
-    print(returns)
 
     if plot_results:
         plt.subplot(121)
@@ -116,13 +106,11 @@ def main():
         df_csv.to_csv(results_outfile)
     #--------------------------------------------------------------------------
 
-
 def fmt(x, pos):
     """
     Formats colourbar values to use percentages
     """
     return '{}%'.format(np.round(x, 0))
-
 
 if __name__ == "__main__":
     main()

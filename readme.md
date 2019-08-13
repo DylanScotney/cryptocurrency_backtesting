@@ -91,16 +91,22 @@ custom types/classes were created these were:
 
 
 ### **Backtesting Strategies**
-All backtesting strategies were built to use a fixed position sizing. Trading strateies are built and tested again using a stratergy pattern:
+All backtesting strategies were built to use a fixed position sizing. 
+Trading strateies are built and tested again using a stratergy pattern:
 * Context class: [backtest()](\\Lib\\strategy_backtester.py)
 * Abstract interface class: [movingAverageTrader()](\\Lib\\strategies\\abstract_MA.py)
-* Concrete implmentation 1: [crossoverTrading()](\\Lib\\strategies\\crossover.py)
-* Concrete implementation 2: [zScoreTrading()](\\Lib\\zscore_trading_strategy.py)
+* Concrete implmentation 1: [crossoverTrader()](\\Lib\\strategies\\crossover.py)
+* Concrete implementation 2: [zScoreTrader()](\\Lib\\strategies\\zscore_trend.py)
+* Seperate implementation: [pairsTrader()](\\Lib\\strategies\\pairs.py)
 
+Note: pairsTrader() does not inherit from movingAverageTrader() like 
+crossoverTrader() and zScoreTrader() because spread data changes as 
+trades are made so implementation has a different approach. General 
+format and layout of classes remain consistent. 
 
-Example usage:
+**Example usage**:
 
-crossoverTrading()
+crossoverTrader()
 ```
 df = <pandas df containing close prices>
 symbol = <asset ticker> # must correspond to header in df
@@ -113,7 +119,7 @@ trader = backtest(strategy, plot_results=True)
 trader.trade()
 ```
 
-zScoreTrading()
+zScoreTrader()
 ```
 df = <pandas df containing close prices>
 symbol = <asset ticker> # must correspond to header in df
@@ -129,6 +135,19 @@ trader = backtest(strategy)
 trader.trade()
 ```
 
+pairsTrader()
+```
+x = <pandas series of first asset>
+y = <pandas series of second asset>
+xlabel = "x"  # label for x series
+ylabel = "y"  # label for y series
+period = 10  # z score period
+bw = 2.0  # bandwidth
+
+strategy = pairsTrader(x, y, xlabel, ylabel, period, bandwidth=bw)
+trader = backtest(strategy)
+trader.trade()
+```
 
 
 
