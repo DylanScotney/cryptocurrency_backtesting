@@ -98,7 +98,7 @@ class zScoreTrader(movingAverageTrader):
 
             if not uptrend and self.position.getPosition() == 0:
                 if Z_t < self.bandwith and Z_t_1 > self.bandwith:
-                    self.openPosition('S')
+                    self.openPosition(t, 'S')
                     self.opentimes.append(t)
             # -----------------------------------------------------------------
 
@@ -115,6 +115,8 @@ class zScoreTrader(movingAverageTrader):
 
         if plot:
             self.plotTrading()
+
+        return self.df['returns'].cumsum().iloc[-1]
 
     def plotTrading(self):
         """
