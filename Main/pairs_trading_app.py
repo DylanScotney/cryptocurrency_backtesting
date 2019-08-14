@@ -53,8 +53,7 @@ def main():
                 strategy = pairsTrader(x, y, asset1, asset2, 
                                        period, bandwidth=bandwidth)
                 trader = backtest(strategy)
-                trader.trade()
-                cum_returns = strategy.df['returns'].cumsum().iloc[-1]
+                cum_returns = trader.trade()
                 returns[i, j] += cum_returns
                 print("Cumulative Returns: {0:.2f}%\n"
                       .format(cum_returns*100))

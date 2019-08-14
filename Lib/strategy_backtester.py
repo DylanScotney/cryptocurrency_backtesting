@@ -35,4 +35,6 @@ class backtest():
         zscore_trading_strategy.py for more details.
         """
 
-        self._strategy.trade(plot=self.plot_results)
+        cum_returns = self._strategy.trade(plot=self.plot_results)
+
+        return cum_returns

@@ -287,6 +287,8 @@ class pairsTrader():
         if (plot):
             self.plotTrading(t0=t0, T=T)
 
+        return self.df['returns'].cumsum().iloc[-1]
+
     def plotSpread(self, t0=0, T=None):
         """
         Plots spread an associated hedge ratio
