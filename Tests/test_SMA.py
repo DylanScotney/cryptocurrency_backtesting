@@ -1,7 +1,7 @@
 from pytest import raises, approx
 import pandas as pd
 
-from ..Lib.simple_moving_average_class import simpleMovingAverage
+from ..Lib.types.simple_moving_average import simpleMovingAverage
 
 def test_initialisation_series_failure():
     """
