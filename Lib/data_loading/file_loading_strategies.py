@@ -151,6 +151,9 @@ class fileLoadingDF(dataLoadingStrat):
     """
     Concrete data loading strategy for the data loading class.
     Reads data stored in a pandas DataFrame.
+
+    Initialisation: 
+    - infile:           (str) file name of csv file containing data
     """
 
     def __init__(self, infile):

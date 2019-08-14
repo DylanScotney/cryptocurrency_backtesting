@@ -14,6 +14,7 @@ class webLoading(dataLoadingStrat):
     from https://www.cryptocompare.com.
 
     Initialisation / construction:
+    - api_key:      cryptocompare api key
     - symbols:      (list) of str of ticker symbols for coins to be considered
                     e.g. ["BTC", "LTC", "ETH", ...]
     - ticksize:     (str) ticksize of data considered. cryptocompare
@@ -196,7 +197,6 @@ class webLoading(dataLoadingStrat):
             enddate_stamp = ((self._end_date - datetime(1970, 1, 1))
                              .total_seconds())
         # ---------------------------------------------------------------------
-        # end of for symbol in symbols
 
         # save raw data and dataframe
         with open(self._outfile_raw, 'w') as json_file:
