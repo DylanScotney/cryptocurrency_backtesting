@@ -112,3 +112,5 @@ class crossoverTrader(movingAverageTrader):
 
         if plot:
             self.plotTrading(longtimes, shorttimes)
+
+        return self.df['returns'].cumsum().iloc[-1]
