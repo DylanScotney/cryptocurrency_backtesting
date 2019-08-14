@@ -35,10 +35,15 @@ This package uses the following libraries, and any of their subsequent dependenc
 Data loading/management is built using a strategy pattern:
 
 * Context class: [dataLoader()](\\Lib\\data_loading\\data_loader.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/data_loading/data_loader.py)
 * Abstract interface class: [dataLoadingStrat()](\\Lib\\data_loading\\abstract_data_loading_strategy.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/data_loading/abstract_data_loading_strategy.py)
 * Concrete implementation 1: [webLoading()](\\Lib\\data_loading\\web_loading_strategies.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/data_loading/web_loading_strategies.py)
 * Concrete implentation 2: [fileLoadingRaw()](\\Lib\\data_loading\\file_loading_strategies.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/data_loading/file_loading_strategies.py)
 * Concrete implementation 3: [fileLoadingDF()](\\Lib\\data_loading\\file_loading_strategies.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/data_loading/file_loading_strategies.py)
 
 Example useage:
 
@@ -84,9 +89,13 @@ corresponding dates
 To handle data and strategies in an object oriented manner, several 
 custom types/classes were created these were: 
 * [Position](\\Lib\\types\\position.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/types/position.py)
 * [zScore](\\Lib\\types\\zscore.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/types/zscore.py)
 * [simpleMovingAverage](\\Lib\\types\\simple_moving_average.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/types/simple_moving_average.py)
 * [expMovingAverage](\\Lib\\types\\exponential_moving_average.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/types/exponential_moving_average.py)
 
 
 
@@ -94,10 +103,15 @@ custom types/classes were created these were:
 All backtesting strategies were built to use a fixed position sizing. 
 Trading strateies are built and tested again using a stratergy pattern:
 * Context class: [backtest()](\\Lib\\strategy_backtester.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/strategy_backtester.py)
 * Abstract interface class: [movingAverageTrader()](\\Lib\\strategies\\abstract_MA.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/strategies/abstract_MA.py)
 * Concrete implmentation 1: [crossoverTrader()](\\Lib\\strategies\\crossover.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/strategies/crossover.py)
 * Concrete implementation 2: [zScoreTrader()](\\Lib\\strategies\\zscore_trend.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/strategies/zscore_trend.py)
 * Seperate implementation: [pairsTrader()](\\Lib\\strategies\\pairs.py)
+[(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/strategies/pairs.py)
 
 Note: pairsTrader() does not inherit from movingAverageTrader() like 
 crossoverTrader() and zScoreTrader() because spread data changes as 
