@@ -45,9 +45,9 @@ Data loading/management is built using a strategy pattern:
 * Concrete implementation 3: [fileLoadingDF()](\\Lib\\data_loading\\file_loading_strategies.py)
 [(GitHub hyperlink)](https://github.com/DylanScotney/cryptocurrency_backtesting/blob/master/Lib/data_loading/file_loading_strategies.py)
 
-Example useage:
+**Example useage**:
 
-webLoading()
+*webLoading()*
 ```
 symbols = [sym.rstrip('\n') for sym in open("alistofsymbols.txt")]
 ticksize = "hour"
@@ -62,7 +62,7 @@ loader = dataLoader(loading_strat)
 data = loader.get_data()
 ```
 
-fileloadingRaw()
+*fileloadingRaw()*
 ```
 infile = "myrawdata.json" # raw data stored by webLoading
 symbols = [sym.rstrip('\n') for sym in open("alistofsymbols.txt")]
@@ -73,7 +73,7 @@ loader = dataLoader(loading_strat)
 data = loader.get_data()
 ```
 
-fileloadingDF()
+*fileloadingDF()*
 ```
 infile = "mydataframe.csv"
 loading_strat = fileLoadingDF(infile) 
@@ -120,7 +120,7 @@ format and layout of classes remain consistent.
 
 **Example usage**:
 
-crossoverTrader()
+*crossoverTrader()*
 ```
 df = <pandas df containing close prices>
 symbol = <asset ticker> # must correspond to header in df
@@ -133,7 +133,7 @@ trader = backtest(strategy, plot_results=True)
 trader.trade()
 ```
 
-zScoreTrader()
+*zScoreTrader()*
 ```
 df = <pandas df containing close prices>
 symbol = <asset ticker> # must correspond to header in df
@@ -149,7 +149,7 @@ trader = backtest(strategy)
 trader.trade()
 ```
 
-pairsTrader()
+*pairsTrader()*
 ```
 x = <pandas series of first asset>
 y = <pandas series of second asset>
