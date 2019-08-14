@@ -1,22 +1,30 @@
 {
-    "ETH": [
-        {
-            "time": 1546297200,
-            "close": 0.03553,
-            "high": 0.03563,
-            "low": 0.03553,
-            "open": 0.03556,
-            "volumefrom": 79512.09,
-            "volumeto": 2827.11
-        },
-        {
-            "time": 1546300800,
-            "close": 0.03562,
-            "high": 0.03562,
-            "low": 0.0355,
-            "open": 0.03553,
-            "volumefrom": 52804.28,
-            "volumeto": 1876.97
-        }
-    ]
+    "Aggregated": false,
+    "ConversionType": {"conversionSymbol": "", "type": "direct"},
+    "Data": [
+            {
+                "close": 0.03553,
+                "high": 0.03563,
+                "low": 0.03553,
+                "open": 0.03556,
+                "time": 1546297200,
+                "volumefrom": 79512.09,
+                "volumeto": 2827.11
+            },
+            {
+                "close": 0.03562,
+                "high": 0.03562,
+                "low": 0.0355,
+                "open": 0.03553,
+                "time": 1546300800,
+                "volumefrom": 52804.28,
+                "volumeto": 1876.97
+            }],
+    "FirstValueInArray": true,
+    "HasWarning": false,
+    "RateLimit": {},
+    "Response": "Success",
+    "TimeFrom": 1546297200,
+    "TimeTo": 1546300800,
+    "Type": 100
 }
