@@ -12,7 +12,7 @@ applied to the crytocurrency market.
 Data was sourced from the [CryptoCompare API](https://min-api.cryptocompare.com). 
 Data from CryptoCompare is sourced from an aggregated feed of over 150 
 crypto exchanges giving you reliable and up-to-date traded rates that 
-are used globally. We have systems in place to remove irregular prices, 
+are used globally. They have systems in place to remove irregular prices, 
 giving you the cleanest prices available. [Read more](https://www.cryptocompare.com/media/27010937/cccagg_methodology_2018-02-26.pdf).
 
 ## **Dependencies**:
