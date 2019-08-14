@@ -4,7 +4,7 @@ import os.path
 import json
 import pandas as pd
 
-from ..Lib.file_loading_strategies import fileLoadingRaw
+from ..Lib.data_loading.file_loading_strategies import fileLoadingRaw
 
 
 def test_initialisation1():
