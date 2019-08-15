@@ -91,12 +91,12 @@ class zScoreTrader(movingAverageTrader):
 
             # Open position logic
             # -----------------------------------------------------------------
-            if uptrend and self.position.getPosition() == 0:
+            if uptrend and self.position.position == 0:
                 if Z_t > -self.bandwith and Z_t_1 < -self.bandwith:
                     self.openPosition(t, 'L')
                     self.opentimes.append(t)
 
-            if not uptrend and self.position.getPosition() == 0:
+            if not uptrend and self.position.position == 0:
                 if Z_t < self.bandwith and Z_t_1 > self.bandwith:
                     self.openPosition(t, 'S')
                     self.opentimes.append(t)
@@ -104,11 +104,11 @@ class zScoreTrader(movingAverageTrader):
 
             # Close position logic
             # -----------------------------------------------------------------
-            if self.position.getPosition() == 1 and Z_t > 0 and Z_t_1 < 0:
+            if self.position.position == 1 and Z_t > 0 and Z_t_1 < 0:
                 self.closePosition(t)
                 self.closetimes.append(t)
 
-            if self.position.getPosition() == -1 and Z_t < 0 and Z_t_1 > 0:
+            if self.position.position == -1 and Z_t < 0 and Z_t_1 > 0:
                 self.closePosition(t)
                 self.closetimes.append(t)
             # -----------------------------------------------------------------
