@@ -40,14 +40,17 @@ class simpleMovingAverage():
         Returns value of moving average at index t
         """
         return self._MA[t]
-
-    def getPeriod(self):
+    
+    # read only member accessors
+    @property
+    def period(self):
         """
         Returns period of moving average
         """
         return self._period
 
-    def getArray(self):
+    @property
+    def values(self):
         """
         Returns whole array of moving averages
         """
