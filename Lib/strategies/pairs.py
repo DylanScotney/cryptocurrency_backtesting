@@ -99,8 +99,8 @@ class pairsTrader():
         HR = self.getHedgeRatio(t)
         yratio, xratio = 1.0 / (1.0 + HR), HR / (1.0 + HR)
 
-        yreturn = self.yPosition.getTradeReturn()*yratio
-        xreturn = self.yPosition.getTradeReturn()*xratio
+        yreturn = self.yPosition.tradereturn*yratio
+        xreturn = self.yPosition.tradereturn*xratio
 
         self.df.loc[t, 'returns'] = yreturn + xreturn
 
@@ -202,7 +202,7 @@ class pairsTrader():
         if(T is None):
             T = self.df.shape[0]
 
-        if self.spreadPosition.getPosition() == 0:
+        if self.spreadPosition.position == 0:
             hold_hedge_ratio = False
         else:
             hold_hedge_ratio = True
@@ -259,7 +259,7 @@ class pairsTrader():
             self._generateZScore(t0=t, T=t+1, period=self.zperiod)
 
             z_t, z_t_1 = self.getZScore(t), self.getZScore(t-1)
-            position_t = self.spreadPosition.getPosition()
+            position_t = self.spreadPosition.position
 
             # Open logic
             # -----------------------------------------------------------------
