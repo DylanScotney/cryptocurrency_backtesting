@@ -78,7 +78,7 @@ class zScoreTrader(movingAverageTrader):
         self.opentimes = []
         self.closetimes = []
 
-        for t in range(self.slowMA.getPeriod(), self.df.shape[0]):
+        for t in range(self.slowMA.period, self.df.shape[0]):
             slowMA_t = self.slowMA.getValue(t)
             fastMA_t = self.fastMA.getValue(t)
             Z_t = self.zscore.getValue(t)
@@ -135,25 +135,25 @@ class zScoreTrader(movingAverageTrader):
         """
 
         bw = self.bandwith
-        t0 = self.slowMA.getPeriod()
+        t0 = self.slowMA.period
         T = self.df.shape[0]
         zscore_MA = (self.df[self.sym]
-                     .rolling(window=self.zscore.getPeriod())
+                     .rolling(window=self.zscore.period)
                      .mean())
 
         plt.subplot(311)
         self.df.loc[t0:T, self.sym].plot(label=self.sym)
-        self.slowMA.getArray().loc[t0:T].plot(label=self.slowMA.name)
+        self.slowMA.values.loc[t0:T].plot(label=self.slowMA.name)
         zscore_MA.loc[t0:T].plot(label=self.zscore.name)
-        if self.fastMA.getPeriod() > 1:
-            self.fastMA.getArray().loc[t0:T].plot(label=self.fastMA.name)
+        if self.fastMA.period > 1:
+            self.fastMA.values.loc[t0:T].plot(label=self.fastMA.name)
         plt.ylabel('{}/BTC'.format(self.sym))
         [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
         [plt.axvline(x, c='r', lw=0.5, ls='--') for x in self.closetimes]
         plt.legend()
 
         plt.subplot(312)
-        self.zscore.getArray().loc[t0:T].plot()
+        self.zscore.values.loc[t0:T].plot()
         plt.plot([t0, T], [bw, bw], c='k', ls='--', lw=0.5)
         plt.plot([t0, T], [-bw, -bw], c='k', ls='--', lw=0.5)
         plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)

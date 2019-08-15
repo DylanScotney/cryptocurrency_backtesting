@@ -61,13 +61,13 @@ class crossoverTrader(movingAverageTrader):
         opening longs and shorts respectively
         """
 
-        t0 = self.slowMA.getPeriod()
+        t0 = self.slowMA.period
         T = self.df.shape[0]
         plt.subplot(211)
         self.df.loc[t0:T, self.sym].plot(label=self.sym)
-        self.slowMA.getArray().loc[t0:T].plot(label=self.slowMA.name)
-        if self.fastMA.getPeriod() > 1:
-            self.fastMA.getArray().loc[t0:T].plot(label=self.fastMA.name)
+        self.slowMA.values.loc[t0:T].plot(label=self.slowMA.name)
+        if self.fastMA.period > 1:
+            self.fastMA.values.loc[t0:T].plot(label=self.fastMA.name)
         [plt.axvline(x, c='g', lw=0.5, ls='--') for x in opentimes]
         [plt.axvline(x, c='r', lw=0.5, ls='--') for x in closetimes]
         plt.ylabel('{}/BTC'.format(self.sym))
@@ -92,7 +92,7 @@ class crossoverTrader(movingAverageTrader):
         longtimes = []
         shorttimes = []
 
-        for t in range(self.slowMA.getPeriod() + 1, self.df.shape[0]):
+        for t in range(self.slowMA.period + 1, self.df.shape[0]):
             slowMA_t = self.slowMA.getValue(t)
             fastMA_t = self.fastMA.getValue(t)
             slowMA_t_1 = self.slowMA.getValue(t-1)

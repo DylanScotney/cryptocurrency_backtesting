@@ -59,8 +59,8 @@ class pairsTrader():
         self.df['returns'] = 0.0
 
         # Use of a moving average to smooth spread
-        self.df['xMA'] = expMovingAverage(x, 10).getArray()
-        self.df['yMA'] = expMovingAverage(y, 10).getArray()
+        self.df['xMA'] = expMovingAverage(x, 10).values
+        self.df['yMA'] = expMovingAverage(y, 10).values
 
     def getSpreadPrice(self, t):
         """
@@ -237,7 +237,7 @@ class pairsTrader():
         if(T is None):
             T = self.df.shape[0]
 
-        zscr = zScore(self.df.loc[t0-period:T-1, 'spread'], period).getArray()
+        zscr = zScore(self.df.loc[t0-period:T-1, 'spread'], period).values
         self.df.loc[t0:T, 'zscore'] = zscr.loc[t0:T-1]
 
     def trade(self, plot=False):
@@ -322,7 +322,7 @@ class pairsTrader():
         plt.subplot(411)
         self.df.loc[t0:T, 'spread'].plot()
         (expMovingAverage(self.df.loc[t0:T, 'spread'],
-                          self.zperiod).getArray().plot())
+                          self.zperiod).values.plot())
         plt.plot([t0, T], [0, 0], c='k', ls='--', lw=0.5)
         plt.ylabel(self.name)
         [plt.axvline(x, c='g', lw=0.5, ls='--') for x in self.opentimes]
