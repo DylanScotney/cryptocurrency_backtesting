@@ -51,13 +51,16 @@ class zScore():
         """
         return self._zScore[t]
 
-    def getPeriod(self):
+    # read only member accessors
+    @property
+    def period(self):
         """
         Returns lookback period for zscore
         """
         return self._period
 
-    def getArray(self):
+    @property
+    def values(self):
         """
         Returns all zscore values
         """
