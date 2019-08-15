@@ -84,7 +84,7 @@ class Position():
         Calculates the round trip trade return as a fraction.
         """
 
-        Exit, Entry = self.getExitPrice(), self.getEntryPrice()
+        Exit, Entry = self.exitprice, self.entryprice
         if (Exit - Entry) == 0:
             self._tradereturn = abs(self._pos) - 1
         else:
