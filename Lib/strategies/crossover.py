@@ -99,13 +99,13 @@ class crossoverTrader(movingAverageTrader):
             fastMA_t_1 = self.fastMA.getValue(t-1)
 
             if fastMA_t > slowMA_t and fastMA_t_1 < slowMA_t_1:
-                if self.position.getPosition() != 0:
+                if self.position.position != 0:
                     self.closePosition(t)
                 self.openPosition(t, 'L')
                 longtimes.append(t)
 
             if fastMA_t < slowMA_t and fastMA_t_1 > slowMA_t_1:
-                if self.position.getPosition() != 0:
+                if self.position.position != 0:
                     self.closePosition(t)
                 self.openPosition(t, 'S')
                 shorttimes.append(t)
