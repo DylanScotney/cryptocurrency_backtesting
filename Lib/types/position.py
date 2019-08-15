@@ -33,6 +33,38 @@ class Position():
         self._exitprice = 0
         self._tradereturn = 0
 
+    # Read only member accessors 
+    @property
+    def entryprice(self):
+        """
+        Gets entry price of a position
+        """
+
+        return self._entryprice
+
+    @property
+    def exitprice(self):
+        """
+        Gets exit price for a position
+        """
+
+        return self._exitprice
+    
+    @property
+    def tradereturn(self):
+        """
+        Gets trade returns
+        """
+        return self._tradereturn
+
+    @property
+    def position(self):
+        """
+        Gets current position
+        """
+        return self._pos
+
+    # Setters
     def setEntryPrice(self, price):
         """
         Sets entry price for a position
@@ -57,32 +89,6 @@ class Position():
             self._tradereturn = abs(self._pos) - 1
         else:
             self._tradereturn = self._pos*(Exit - Entry)/abs(Entry)
-
-    def getEntryPrice(self):
-        """
-        Gets entry price of a position
-        """
-
-        return self._entryprice
-
-    def getExitPrice(self):
-        """
-        Gets exit price for a position
-        """
-
-        return self._exitprice
-
-    def getTradeReturn(self):
-        """
-        Gets trade returns
-        """
-        return self._tradereturn
-
-    def getPosition(self):
-        """
-        Gets current position
-        """
-        return self._pos
 
     def open(self, price, pos_type, fee=0):
         """
