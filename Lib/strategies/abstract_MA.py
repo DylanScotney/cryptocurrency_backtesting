@@ -80,7 +80,7 @@ class movingAverageTrader(metaclass=abc.ABCMeta):
         Stores trade returns in dataframe
         """
 
-        self.df.loc[t, 'returns'] = self.position.getTradeReturn()
+        self.df.loc[t, 'returns'] = self.position.tradereturn
 
     def openPosition(self, t, pos_type):
         """
